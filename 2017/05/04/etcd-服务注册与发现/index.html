@@ -1,0 +1,961 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="etcd," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="etcd 是一个分布式一致性的 key-value 存储技术， 被用来做配置共享和服务发现。有着以下优点：  简单： 使用 gRPC 实现了 面向用户的API（v3）， v2版本提供 CURL 可访问的 API（ HTTP+JSON ） 安全： 自动使用 TLS 并可选客户端验证 快速： 10，000 次写操作／秒 可靠： 使用 Raft 算法实现  etcd 安装获取etcd 最简单的方式是从">
+<meta name="keywords" content="etcd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="etcd 服务注册与发现">
+<meta property="og:url" content="http://ralphbupt.github.io/2017/05/04/etcd-服务注册与发现/index.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="etcd 是一个分布式一致性的 key-value 存储技术， 被用来做配置共享和服务发现。有着以下优点：  简单： 使用 gRPC 实现了 面向用户的API（v3）， v2版本提供 CURL 可访问的 API（ HTTP+JSON ） 安全： 自动使用 TLS 并可选客户端验证 快速： 10，000 次写操作／秒 可靠： 使用 Raft 算法实现  etcd 安装获取etcd 最简单的方式是从">
+<meta property="og:image" content="http://ralphbupt.github.io/img/etcd.jpeg">
+<meta property="og:updated_time" content="2017-05-04T05:04:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="etcd 服务注册与发现">
+<meta name="twitter:description" content="etcd 是一个分布式一致性的 key-value 存储技术， 被用来做配置共享和服务发现。有着以下优点：  简单： 使用 gRPC 实现了 面向用户的API（v3）， v2版本提供 CURL 可访问的 API（ HTTP+JSON ） 安全： 自动使用 TLS 并可选客户端验证 快速： 10，000 次写操作／秒 可靠： 使用 Raft 算法实现  etcd 安装获取etcd 最简单的方式是从">
+<meta name="twitter:image" content="http://ralphbupt.github.io/img/etcd.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/2017/05/04/etcd-服务注册与发现/"/>
+
+
+
+
+
+  <title>etcd 服务注册与发现 | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/05/04/etcd-服务注册与发现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SleepyJimmy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/wmm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ralph's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">etcd 服务注册与发现</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-04T11:08:25+08:00">
+                2017-05-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/04/etcd-服务注册与发现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/05/04/etcd-服务注册与发现/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>etcd 是一个分布式一致性的 key-value 存储技术， 被用来做配置共享和服务发现。有着以下优点：</p>
+<ul>
+<li>简单： 使用 gRPC 实现了 面向用户的API（v3）， v2版本提供 CURL 可访问的 API（ HTTP+JSON ）</li>
+<li>安全： 自动使用 TLS 并可选客户端验证</li>
+<li>快速： 10，000 次写操作／秒</li>
+<li>可靠： 使用 Raft 算法实现</li>
+</ul>
+<h1 id="etcd-安装"><a href="#etcd-安装" class="headerlink" title="etcd 安装"></a>etcd 安装</h1><h2 id="获取etcd"><a href="#获取etcd" class="headerlink" title="获取etcd"></a>获取etcd</h2><ul>
+<li>最简单的方式是从 <a href="https://github.com/coreos/etcd/releases/" target="_blank" rel="external">Github release page</a> 下载编译好的二进制文件。</li>
+<li>etcd 是用 go 开发的， 也可以从 <a href="https://github.com/coreos/etcd" target="_blank" rel="external">https://github.com/coreos/etcd</a> 处直接下载源码， 下载完成之后在源码目录执行 ./build 编译项目</li>
+</ul>
+<h2 id="运行-etcd"><a href="#运行-etcd" class="headerlink" title="运行 etcd"></a>运行 etcd</h2><h3 id="运行单机-etcd-集群"><a href="#运行单机-etcd-集群" class="headerlink" title="运行单机 etcd 集群"></a>运行单机 etcd 集群</h3><p>首先安装 goreman </p>
+<pre><code>go get github.com/mattn/goreman
+</code></pre><p>编辑 Profile 文件。 vim Procfile</p>
+<pre><code># Use goreman to run `go get github.com/mattn/goreman`
+etcd1: bin/etcd --name infra1 --listen-client-urls http://127.0.0.1:2379 --advertise-client-urls http://127.0.0.1:2379 --listen-peer-urls http://127.0.0.1:12380 --initial-advertise-peer-urls http://127.0.0.1:12380 --initial-cluster-token etcd-cluster-1 --initial-cluster &apos;infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380&apos; --initial-cluster-state new --enable-pprof
+etcd2: bin/etcd --name infra2 --listen-client-urls http://127.0.0.1:22379 --advertise-client-urls http://127.0.0.1:22379 --listen-peer-urls http://127.0.0.1:22380 --initial-advertise-peer-urls http://127.0.0.1:22380 --initial-cluster-token etcd-cluster-1 --initial-cluster &apos;infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380&apos; --initial-cluster-state new --enable-pprof
+etcd3: bin/etcd --name infra3 --listen-client-urls http://127.0.0.1:32379 --advertise-client-urls http://127.0.0.1:32379 --listen-peer-urls http://127.0.0.1:32380 --initial-advertise-peer-urls http://127.0.0.1:32380 --initial-cluster-token etcd-cluster-1 --initial-cluster &apos;infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380&apos; --initial-cluster-state new --enable-pprof
+# in future, use proxy to listen on 2379
+#proxy: bin/etcd --name infra-proxy1 --proxy=on --listen-client-urls http://127.0.0.1:2378 --initial-cluster &apos;infra1=http://127.0.0.1:12380,infra2=http://127.0.0.1:22380,infra3=http://127.0.0.1:32380&apos; --enable-pprof
+</code></pre><p>启动集群</p>
+<pre><code>goreman start
+</code></pre><p>上述脚本生成一个三个 etcd 成员 infra1 infra2 infra3 和一个 etcd 代理 proxy， 共同组成了一个本地的集群.</p>
+<p>每一个集群成员 和 代理 都接受 key-value 的读写请求。</p>
+<h1 id="etcd-实现共享配置"><a href="#etcd-实现共享配置" class="headerlink" title="etcd 实现共享配置"></a>etcd 实现共享配置</h1><ul>
+<li>理论上，应用唯一需要的配置的 ETCD_HOST 环境变量，用于指定ETCD地址。通常使用 docker。</li>
+<li>应用启动时从 etcd 获取一次配置信息，（获取该 key 的 value）</li>
+<li>同时系统在 etcd 节点上注册一个 Watcher,这样每次配置发生改变之后，应用都能通过 etcd 实时获取到最新配置。</li>
+</ul>
+<h1 id="etcd-服务注册与发现"><a href="#etcd-服务注册与发现" class="headerlink" title="etcd 服务注册与发现"></a>etcd 服务注册与发现</h1><p>随着 docker 的火爆， 微服务架构中的服务注册和发现变的越来越重要，而 etcd 就是为了为这些情况提供解决方案的。因为 etcd 有以下特性：</p>
+<ul>
+<li>强一致和高可用。 采用了 Raft 算法的 etcd 能勾为我们提供强一致性和高可用性的保证</li>
+<li>提供了注册服务和监听服务状态的机制    etcd 可以对某个 key 设置 TTL，可以通过监听服务的心跳来检测服务状态。</li>
+<li>提供了一种查找和连接服务的机制。当监听到添加了某个服务之后，可以去连接该服务。 有时候我们可以在每一台提供服务的机器上部署一个 proxy 模式的 etcd 节点。 每个服务只要访问自己的 etcd 节点即可。</li>
+</ul>
+<h2 id="example"><a href="#example" class="headerlink" title="example"></a>example</h2><p>现在假设我们需要开发一套可以水平扩展的长连接服务，需要能动态添加和删除服务器。</p>
+<p><img src="/img/etcd.jpeg" alt="etcd"></p>
+<ul>
+<li>每一台 server 启动成功后，去向 etcd 注册服务，并定时向etcd 发送心跳</li>
+<li>同时网关 agent 监听服务目录（对key注册Watcher），当监听到新的服务时，将服务器添加到可用服务器列表中。</li>
+<li>当有的 server 关闭后，agent 检测到某个 key  的超时，可以根据自己的策略来决定是否删除掉该server。</li>
+<li>客户端连接 server 之前，先向 agent 请求一台 server 地址，agent 可以根据自己的策略给 client 分配服务。 常用的有一致性hash 等算法。 client 更根据分配的 server 地址去连接长连接服务</li>
+</ul>
+<h3 id="client-服务注册"><a href="#client-服务注册" class="headerlink" title="client 服务注册"></a>client 服务注册</h3><pre><code>type Service struct {
+    ProcessId int            // 进程ID ， 单机调试时用来标志每一个服务
+    info      Serverinfo    // 服务端信息
+    KeysAPI   client.KeysAPI // API client, 此处用的是 V2 版本的API，是基于     http 的。 V3版本的是基于grpc的API
+}
+// workerInfo is the service register information to etcd
+type Serverinfo struct {
+    Id   int32    `json:&quot;id&quot;`   // 服务器ID
+    IP   string   `json:&quot;ip&quot;`   // 对外连接服务的 IP
+    Port int32    `json:&quot;port&quot;` // 对外服务端口，本机或者端口映射后得到的
+}
+
+
+
+// 注册服务
+func RegisterService( endpoints []string) {
+        cfg := client.Config{
+            Endpoints:               endpoints,
+            Transport:               client.DefaultTransport,
+            HeaderTimeoutPerRequest: time.Second,
+        }
+
+    etcdClient, err := client.New(cfg)
+    if err != nil {
+        log.Fatal(&quot;Error: cannot connec to etcd:&quot;, err)
+    }
+
+    s := &amp;Service{
+        ProcessId: os.Getpid(),
+        info:      Serverinfo{Id: 1024, IP: &quot;127.0.0.1&quot;, Port: 100},
+        KeysAPI:   client.NewKeysAPI(etcdClient),
+    }
+    go s.HeartBeat() // 定时发送心跳
+}
+
+func (s *Service) HeartBeat() {
+    api := s.KeysAPI
+    for {
+        key := &quot;lc_server/p_&quot; + strconv.Itoa(s.ProcessId) // 先用 pid 来标识每一个服务， 通常应该用 IP 等来标识。
+        // etcd 之所以适合用来做服务发现，是因为它是带目录结构的。 注册一类服务，
+        // 只需要 key 在同一个目录下，此处 lc_sercer 目录下，p_{pid} 
+        value, _ := json.Marshal(s.info)
+
+        _, err := api.Set(context.Background(), key, string(value), &amp;client.SetOptions{
+            TTL: time.Second * 20,
+        })    // 调用 API， 设置该 key TTL 为20秒。
+
+        if err != nil {
+            log.Println(&quot;Error update workerInfo:&quot;, err)
+        }
+        time.Sleep(time.Second * 10)
+    }
+}
+</code></pre><h3 id="agent-监听服务"><a href="#agent-监听服务" class="headerlink" title="agent 监听服务"></a>agent 监听服务</h3><pre><code>type Server struct {
+    info   Serverinfo // 服务器信息
+    Status int         // 服务器状态
+}
+
+// all server
+type server_pool struct {
+    services map[string]*Server    // server 列表
+    client   etcdclient.Client
+    mu       sync.RWMutex
+}
+
+var (
+    Default_pool server_pool
+    once          sync.Once
+)
+
+
+func Init( endpoints []string) {
+    once.Do(func() { Default_pool.init(endpoints) })
+}
+
+func (p *server_pool) init( hosts []string) {
+    // init etcd client
+    cfg := etcdclient.Config{
+        Endpoints: hosts, //
+        Transport: etcdclient.DefaultTransport,
+    }
+    etcdcli, err := etcdclient.New(cfg)
+    if err != nil {
+        log.Panic(err)
+        os.Exit(-1)
+    }
+    p.client = etcdcli
+    // init
+    p.services = make(map[string]*Server)
+
+    go p.watcher()
+}
+
+
+// watcher for data change in etcd directory
+func (p *server_pool) watcher() error {
+    kAPI := etcdclient.NewKeysAPI(p.client)
+    w := kAPI.Watcher(&quot;lc_server/&quot;, &amp;etcdclient.WatcherOptions{Recursive: true})
+    // 监听 &quot;lc_server/&quot; 当 &quot;lc_server/&quot; 子目录改变时能收到通知
+    for {
+        resp, err := w.Next(context.Background())
+        if err != nil {
+            log.Println(err)
+            continue
+        }
+        if resp.Node.Dir {
+            continue
+        }
+        switch resp.Action {
+        case &quot;set&quot;, &quot;create&quot;, &quot;update&quot;, &quot;compareAndSwap&quot;:
+            p.add_server(resp.Node.Key, resp.Node.Value)
+            // 添加或更新 server 信息
+        case &quot;delete&quot;, &quot;compareAndDelete&quot;,&quot;expire&quot;:
+            p.remove_server(resp.PrevNode.Key)
+            // 当过期之后删除 server
+        }
+    }
+}
+</code></pre><p>以上是一个简单的长连接服务注册与发现的简单 demo。 服务注册与发现通常被用在微服务架构中，基本思想是通过职能划分，能够做到更合理的调动服务器资源。</p>
+<p>上述是一个是注册的长连接服务，消耗的是带宽，还有一些其他服务消耗IO， 内存，CPU，GPU等。 可以通过服务的动态添加合理的配置每中服务的资源数量。</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
+<li><a href="http://www.infoq.com/cn/articles/etcd-interpretation-application-scenario-implement-principle" target="_blank" rel="external">etcd：从应用场景到实现原理的全方位解读</a></li>
+<li>[CoreOS 实战：剖析 etcd] (<a href="http://www.infoq.com/cn/articles/coreos-analyse-etcd" target="_blank" rel="external">http://www.infoq.com/cn/articles/coreos-analyse-etcd</a>)</li>
+<li><a href="http://daizuozhuo.github.io/etcd-service-discovery/" target="_blank" rel="external">用etcd做服务发现及Go代码示例</a></li>
+<li><a href="https://github.com/coreos/etcd" target="_blank" rel="external">etcd 官方文档</a></li>
+<li><a href="http://gonet2.github.io/" target="_blank" rel="external">一个微服务游戏服务架构</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>如果你觉得本文对你有帮助，欢迎打赏！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/img/weixin.JPG" alt="SleepyJimmy WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/img/zhifubao.JPG" alt="SleepyJimmy Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/etcd/" rel="tag"># etcd</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/13/Golang-并发模式Context/" rel="next" title="Golang 并发模式Context">
+                <i class="fa fa-chevron-left"></i> Golang 并发模式Context
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/24/git代理设置与取消/" rel="prev" title="git代理设置与取消">
+                git代理设置与取消 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#etcd-安装"><span class="nav-number">1.</span> <span class="nav-text">etcd 安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取etcd"><span class="nav-number">1.1.</span> <span class="nav-text">获取etcd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行-etcd"><span class="nav-number">1.2.</span> <span class="nav-text">运行 etcd</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行单机-etcd-集群"><span class="nav-number">1.2.1.</span> <span class="nav-text">运行单机 etcd 集群</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#etcd-实现共享配置"><span class="nav-number">2.</span> <span class="nav-text">etcd 实现共享配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#etcd-服务注册与发现"><span class="nav-number">3.</span> <span class="nav-text">etcd 服务注册与发现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#example"><span class="nav-number">3.1.</span> <span class="nav-text">example</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#client-服务注册"><span class="nav-number">3.1.1.</span> <span class="nav-text">client 服务注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#agent-监听服务"><span class="nav-number">3.1.2.</span> <span class="nav-text">agent 监听服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文档"><span class="nav-number">4.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/2017/05/04/etcd-服务注册与发现/';
+          this.page.identifier = '2017/05/04/etcd-服务注册与发现/';
+          this.page.title = 'etcd 服务注册与发现';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

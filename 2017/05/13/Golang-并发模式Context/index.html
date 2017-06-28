@@ -1,0 +1,917 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Golang - Context," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="context 在 http 服务， rpc 服务等功能中经常被用到。 在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。 context 的接口定义 type Context interface{     Don">
+<meta name="keywords" content="Golang - Context">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 并发模式Context">
+<meta property="og:url" content="http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/index.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="context 在 http 服务， rpc 服务等功能中经常被用到。 在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。 context 的接口定义 type Context interface{     Don">
+<meta property="og:updated_time" content="2017-05-13T07:55:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang 并发模式Context">
+<meta name="twitter:description" content="context 在 http 服务， rpc 服务等功能中经常被用到。 在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。 context 的接口定义 type Context interface{     Don">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/"/>
+
+
+
+
+
+  <title>Golang 并发模式Context | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SleepyJimmy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/wmm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ralph's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Golang 并发模式Context</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-13T15:48:53+08:00">
+                2017-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/13/Golang-并发模式Context/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/05/13/Golang-并发模式Context/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>context 在 http 服务， rpc 服务等功能中经常被用到。</p>
+<p>在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。</p>
+<p>context 的接口定义</p>
+<pre><code>type Context interface{
+    Done() &lt;- chan struct{}
+    Err() error
+    Deadline()(deadline time.Time, ok bool)
+    Value(key interface{}) interface{}
+}
+</code></pre><p>该接口定义了四个函数来观察 context 的状态</p>
+<ul>
+<li>Done 返回一个当 context 被取消或者结束时候会被关闭的 channel</li>
+<li>Deadline 如果 context 被设置了过期时间，者返回该时间 如果没有定义该过期， 返回false </li>
+<li>Err 当 Done 返回的 channel 关闭后，Err 返回 non-nil 的 错误值。如果被取消返回 Canceled , 如果过期返回 DeadlineExceeded</li>
+<li>Value 返回和 context 相关联的值</li>
+</ul>
+<h2 id="默认-context"><a href="#默认-context" class="headerlink" title="默认 context"></a>默认 context</h2><p>context 包中提供了两个默认的 package</p>
+<pre><code>var (
+    todo       = context.TODO()
+    background = context.Background()
+)
+</code></pre><ul>
+<li>context.TODO  当不清楚该使用哪一个 context 的时候，可以使用 context.TODO </li>
+<li>BackGround 通常在初始化函数、main 函数等高层的的地方被使用</li>
+</ul>
+<p>两个 context 都没有取消、没有传值，也没有过期功能</p>
+<h2 id="其他-context"><a href="#其他-context" class="headerlink" title="其他 context"></a>其他 context</h2><p>context包提供了四种基础的 context</p>
+<ul>
+<li><p>context.WithCancel 返回一个 从 parent context 继承的 context。 如果 parent context 的 Done 返回的channel 别关闭或 CancelFunc 被调用的时候，该 context 的 Done 返回的 channel 也会被关闭。</p>
+<pre><code>func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
+    ctx, f := context.WithCancel(parent)
+    return ctx, CancelFunc(f)
+}
+</code></pre></li>
+<li><p>context.WithTimeout 返回一个 context。 当该 context 的 CancelFunc 被调用，或者 context 到期，或者 parent context 的 Done Channel  关闭，都会导致该 context 的Done channel 关闭</p>
+<pre><code>func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
+    return WithDeadline(parent, time.Now().Add(timeout))
+}
+</code></pre></li>
+<li><p>context.WithDeadline 和 WithTimeout 功能类似</p>
+<pre><code>func WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc) {
+    ctx, f := context.WithDeadline(parent, deadline)
+    return ctx, CancelFunc(f)
+}
+</code></pre></li>
+<li><p>context.WithValue 返回的 context 有一个 key-value map，该 context 及其子 goutine 都能使用该 map</p>
+<pre><code>func WithValue(parent Context, key interface{}, val interface{}) Context {
+    return context.WithValue(parent, key, val)
+}
+</code></pre></li>
+</ul>
+<h2 id="example"><a href="#example" class="headerlink" title="example"></a>example</h2><p>下面的一个例子中包含了 context 基本用法</p>
+<pre><code>package main
+
+import (
+    &quot;bufio&quot;
+    &quot;fmt&quot;
+    &quot;strings&quot;
+    &quot;time&quot;
+    &quot;context&quot;
+)
+
+// ctx 一般用作第一个参数
+func Inc(ctx context.Context, a int) {
+
+    // 此处用 ctx 的 value 来获取 一个值。 不过 ctx 的 value 通常情况下不用来传递参数。
+    // 此处只是用来说明 context.Value 的用法
+    intival := ctx.Value(&quot;interval&quot;).(time.Duration)
+
+    for {
+        select {
+        // 当子 ctx 的 cancelfunc 被调用的时候或者 context 到期， Done 关闭 
+        case &lt;-ctx.Done():
+            if ctx.Err() == context.Canceled {    　// ctx 的 cancel 被调用
+                fmt.Println(&quot;function canceled&quot;)
+                return
+            } else if ctx.Err() == context.DeadlineExceeded {
+                // WithDeadline 或 WithTimeout 设定的超时被触发
+                fmt.Println(&quot;function time out &quot;)
+                return
+            }
+        default:
+            time.Sleep(intival)
+            a++
+        }
+    }
+}
+
+func main() {
+    dura := time.Second * 1
+    ctx := context.WithValue(context.Background(), &quot;interval&quot;, dura)
+    ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+    // 先从 Background context 继承了一个带 value 的 context，再继承了一个带超时的 ctx。
+
+    go Inc(ctx, 0) // 新开一个 goutine, 传入当前 goroutine 的上下文  
+    // context 是 goroutine 安全的， 可以在多个 goroutine 中同时访问该 context
+
+    fmt.Print(&quot;Inc function is runnning&quot;)
+    if deadline, ok := ctx.Deadline(); ok {
+        fmt.Printf(&quot; %s second left to run the Inc function .\n&quot;, deadline.Sub(time.Now()).String())
+    }
+    // ctx.Deadline 主要获取ctx 的过期时间，如果没有设置超时的话 ok 会返回 false
+    reader := bufio.NewReader(os.Stdin)
+    for {
+
+        fmt.Printf(&quot;  Press A to abort: &quot;)
+        if line, err := reader.ReadString(&apos;\n&apos;); err == nil {
+            command := strings.TrimSuffix(line, &quot;\n&quot;)
+            switch command {
+            case &quot;A&quot;:
+                cancel()        // 手动调用 ctx 的cancelfunc ctx Done 返回的 channel 会关闭
+                time.Sleep(500 * time.Millisecond)
+                return
+            default:
+                if deadline, ok := ctx.Deadline(); ok {
+                    fmt.Printf(&quot;%s second left, Press A to stop `\n&quot;, deadline.Sub(time.Now()).String())
+                }
+            }
+        }
+    }
+}
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>遇到 context 了比较长一段时间了，之前一直看不明白。 这次用下心来发现也没有那么困难， 先尝试去理解，理解知乎去试着写一个 demo。 这样理解就会加深很多。然后，现在看的代码是在太少了，继续加油吧。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><a href="https://blog.golang.org/context" target="_blank" rel="external">https://blog.golang.org/context</a></li>
+<li><a href="https://blog.golang.org/pipelines" target="_blank" rel="external">https://blog.golang.org/pipelines</a></li>
+<li><a href="https://lycheng.github.io/2016/10/19/golang-context.html" target="_blank" rel="external">https://lycheng.github.io/2016/10/19/golang-context.html</a></li>
+<li><a href="http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/" target="_blank" rel="external">http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>如果你觉得本文对你有帮助，欢迎打赏！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/img/weixin.JPG" alt="SleepyJimmy WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/img/zhifubao.JPG" alt="SleepyJimmy Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Golang-Context/" rel="tag"># Golang - Context</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/27/gRPC之metadata/" rel="next" title="gRPC之metadata(译)">
+                <i class="fa fa-chevron-left"></i> gRPC之metadata(译)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/04/etcd-服务注册与发现/" rel="prev" title="etcd 服务注册与发现">
+                etcd 服务注册与发现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#默认-context"><span class="nav-number">1.</span> <span class="nav-text">默认 context</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-context"><span class="nav-number">2.</span> <span class="nav-text">其他 context</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#example"><span class="nav-number">3.</span> <span class="nav-text">example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">5.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/';
+          this.page.identifier = '2017/05/13/Golang-并发模式Context/';
+          this.page.title = 'Golang 并发模式Context';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

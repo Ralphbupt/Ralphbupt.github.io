@@ -1,0 +1,1023 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="-分布式锁 -源码阅读," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="distributed locks 原理分布式锁的 是指不同进程甚至不同机器上的进程要对同一个共享变量进行互斥操作。 在很多场景中很实用， 例如秒杀活动，全局自增 ID 等， 我在刚工作的时候的第一个项目里有一个场景是 不同的进程要对 redis 同一个队列进行处理，其中就用到了 redis 的分布式锁， 还有一些其他的应用场景就不一一说明了。 redis 的特性使得其很容易实现分布式锁的功能，而">
+<meta name="keywords" content="-分布式锁 -源码阅读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis 分布式锁">
+<meta property="og:url" content="http://ralphbupt.github.io/2017/03/31/redis-分布式锁/index.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="distributed locks 原理分布式锁的 是指不同进程甚至不同机器上的进程要对同一个共享变量进行互斥操作。 在很多场景中很实用， 例如秒杀活动，全局自增 ID 等， 我在刚工作的时候的第一个项目里有一个场景是 不同的进程要对 redis 同一个队列进行处理，其中就用到了 redis 的分布式锁， 还有一些其他的应用场景就不一一说明了。 redis 的特性使得其很容易实现分布式锁的功能，而">
+<meta property="og:updated_time" content="2017-04-06T16:56:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="redis 分布式锁">
+<meta name="twitter:description" content="distributed locks 原理分布式锁的 是指不同进程甚至不同机器上的进程要对同一个共享变量进行互斥操作。 在很多场景中很实用， 例如秒杀活动，全局自增 ID 等， 我在刚工作的时候的第一个项目里有一个场景是 不同的进程要对 redis 同一个队列进行处理，其中就用到了 redis 的分布式锁， 还有一些其他的应用场景就不一一说明了。 redis 的特性使得其很容易实现分布式锁的功能，而">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/2017/03/31/redis-分布式锁/"/>
+
+
+
+
+
+  <title>redis 分布式锁 | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/03/31/redis-分布式锁/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SleepyJimmy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/wmm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ralph's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">redis 分布式锁</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-31T14:38:41+08:00">
+                2017-03-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/31/redis-分布式锁/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/03/31/redis-分布式锁/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="distributed-locks-原理"><a href="#distributed-locks-原理" class="headerlink" title="distributed locks 原理"></a>distributed locks 原理</h2><p>分布式锁的 是指不同进程甚至不同机器上的进程要对同一个共享变量进行互斥操作。 在很多场景中很实用， 例如秒杀活动，全局自增 ID 等， 我在刚工作的时候的第一个项目里有一个场景是 不同的进程要对 redis 同一个队列进行处理，其中就用到了 redis 的分布式锁， 还有一些其他的应用场景就不一一说明了。 redis 的特性使得其很容易实现分布式锁的功能，而且官方提出了一个 Redlock 算法。</p>
+<h2 id="使用目标"><a href="#使用目标" class="headerlink" title="使用目标"></a>使用目标</h2><p>我们希望 分布式锁有三个特性</p>
+<ul>
+<li><p>安全性： 锁应该是互斥的，任何时候只有一个 client 可以持有锁</p>
+</li>
+<li><p>无死锁： 即使一个持有锁的节点崩溃的情况下其他节点也最终能获取到锁</p>
+</li>
+<li><p>容错性： 只要大多数 redis 节点正常工作，客户端就能释放和获取锁</p>
+</li>
+</ul>
+<h2 id="简单的分布式锁"><a href="#简单的分布式锁" class="headerlink" title="简单的分布式锁"></a>简单的分布式锁</h2><h3 id="锁的获取"><a href="#锁的获取" class="headerlink" title="锁的获取"></a>锁的获取</h3><pre><code>SET LIST_A random_value NX PX 30000
+</code></pre><p>最简单的方法是创建一个带超时的 KEY，  例如我们要锁住 队列 A， 我们可以用    SET LIST_A random_value NX PX 30000, 来锁住A， 其中 random_value 是一串随机字符串，并在所有的锁定请求中要求是唯一的（产生一串随机字符串）,其中 NX 选项保证了只有在 LIST_A 不存在的情况下才能创建成功。其他 client 需要获取该锁的时候，先检查 LIST_A 是否存在， 如果不存在则能获取该锁。 因为 LIST_A 有设置超时，所以即使占有锁的时候崩溃了也不影响其他客户端获取锁。这样的 分布式锁其实能够满足一般的需求了，但作者强烈不建议使用这种办法，因为不满足 安全性 和 容错性两条特性。</p>
+<p>因为这种情况需要考虑到如果该 redis 节点崩溃了那么整个系统就不能使用，即使我们为该节点添加一个从节点。但是因为 redis 的主从复制是异步的，所以如果在复制的过程中 master 节点崩溃，这种情况下也可能导致两个客户端同时获取到该锁。</p>
+<h3 id="锁的释放"><a href="#锁的释放" class="headerlink" title="锁的释放"></a>锁的释放</h3><p>我们用上面提到的方式就能正确的获取锁，在释放锁的时候，可以利用 LUA 脚本来完成锁的释放（原子性操作）</p>
+<pre><code>if redis.call(&quot;get&quot;,KEYS[1]) == ARGV[1] then
+    return redis.call(&quot;del&quot;,KEYS[1])
+else
+    return 0
+end
+</code></pre><p>我们只在 KEY 的值是我们自己设置的值的时候才删除该值， 这是为了避免释放掉其他 client 创建的锁。 例如当 client A 获取了一个锁，锁的超时是 10 秒，但 client A 因为其他原因阻塞了 15 秒后才调用释放锁，那么如果这时候不判断值是不是自己设置的话就会将其他 client 的锁给释放掉。 如果在某些不支持 LUA 脚本的情况下可以考虑自己用事务来实现该操作。</p>
+<h2 id="Redlock"><a href="#Redlock" class="headerlink" title="Redlock"></a>Redlock</h2><p>redlock 算法， 我们假设有N个相互独立的节点。基本原理是获取锁的时候，只有成功锁住 N/2 + 1 个节点是，才算成功获取该锁，或者释放掉已有的锁。下面是官方的介绍。</p>
+<ul>
+<li>以毫秒为单位获取当前时间。</li>
+</ul>
+<ul>
+<li>尝试在所有N个实例中顺序获取锁，在所有实例中使用相同的 KEY 和 随机的 VALUE。同时，获取锁的超时时间相比锁的自动锁定时间来说应当小很多。当一个节点不可用时，应该尽量尝试同下一个节点获取锁定。</li>
+</ul>
+<ul>
+<li>客户端计算通过从当前时间中减去步骤1中获得的时间戳来获取锁定所需的时间。当且仅当客户端能够在大多数实例中获取锁定时，并且获取锁定的总时间小于锁定有效时间，则认为该锁被获取。</li>
+</ul>
+<ul>
+<li>如果锁被获取，则其有效时间被认为是初始有效时间减去经过的时间，如步骤3中所计算的。</li>
+</ul>
+<ul>
+<li>如果客户端由于某种原因（无法锁定N / 2 + 1个实例或有效时间为负）而无法获取锁定，则会尝试解锁所有实例。</li>
+</ul>
+<h2 id="redlock-的-Go-实现"><a href="#redlock-的-Go-实现" class="headerlink" title="redlock 的 Go 实现"></a>redlock 的 Go 实现</h2><p>下面是 Redloc 的一份Go语言实现，源码经过了注释，为了方便阅读，删除了一些不重要的代码</p>
+<pre><code>// Fields of a Mutex must not be changed after first use.
+type Mutex struct {
+    Name   string        // Resouce name
+    Expiry time.Duration // 锁的有效期
+
+    Tries int           // 在确认获取锁失败之前的重试次数
+    Delay time.Duration // 在两次获取锁请求之间的间隔
+
+    Factor float64 // Drift factor, DefaultFactor if 0
+
+    Quorum int // // 判定成功的值， 通常是 len(nodes)/ 2 + 1
+
+    value string
+    until time.Time
+
+    nodes []Pool
+    nodem sync.Mutex
+}
+
+// Lock locks m.
+// In case it returns an error on failure, you may retry to acquire the lock by calling this method again.
+func (m *Mutex) Lock() error {
+    m.nodem.Lock()            // 使用本地锁来保护分布式锁的访问
+    defer m.nodem.Unlock()
+
+    b := make([]byte, 16)
+    _, err := rand.Read(b)
+    if err != nil {
+        return err
+    }
+    value := base64.StdEncoding.EncodeToString(b)            // 产生一个随机的 value
+
+    expiry := m.Expiry        
+    if expiry == 0 {
+        expiry = DefaultExpiry                                // 设置锁的默认过期时间
+    }
+
+    retries := m.Tries
+    if retries == 0 {
+        retries = DefaultTries                                // 默认重试次数
+    }
+
+    for i := 0; i &lt; retries; i++ {                            // 不停的尝试获取锁
+        n := 0
+        start := time.Now()                                    // 获取当前时间
+        for _, node := range m.nodes {
+            if node == nil {
+                continue
+            }
+
+            conn := node.Get()
+            reply, err := redis.String(conn.Do(&quot;set&quot;, m.Name, value, &quot;nx&quot;, &quot;px&quot;, int(expiry/time.Millisecond)))
+            conn.Close()            // 依次尝试从每一个节点获取锁
+            if err != nil {
+                continue        // 失败后立即尝试下一个节点
+            }
+            if reply != &quot;OK&quot; {
+                continue
+            }
+            n++            // 成功锁定一个节点
+        }
+
+        factor := m.Factor
+        if factor == 0 {
+            factor = DefaultFactor
+        }
+
+        until := time.Now().Add(expiry - time.Now().Sub(start) - time.Duration(int64(float64(expiry)*factor)) 
+            + 2*time.Millisecond)
+        if n &gt;= m.Quorum &amp;&amp; time.Now().Before(until) {    // 当大部分节点成功获取锁定，且获取锁的时间小于锁的有效时间
+            m.value = value        // 锁被成功获取
+            m.until = until        // 锁的有效期
+            return nil
+        }
+        // 如果没有成功锁定分布式锁，那么尝试对所有节点进行解锁(不论之前是否已近锁定了) 
+        for _, node := range m.nodes {
+            if node == nil {
+                continue
+            }
+
+            conn := node.Get()
+            _, err := delScript.Do(conn, m.Name, value)    // 调用 LUA 的删除脚本 只要是自己 value 和 自己 的值相等，则释放锁
+            conn.Close()
+            if err != nil {
+                continue
+            }
+        }
+
+        // Have no delay on the last try so we can return ErrFailed sooner.
+        if i == retries-1 {
+            continue            // 最后一次尝试失败后不要在延迟，立马返回错误
+        }
+
+        delay := m.Delay
+        if delay == 0 {
+            delay = DefaultDelay
+        }
+        time.Sleep(delay)        // 每一次失败后延迟一段时间，其实官方文档建议的是随机延迟一段时间
+    }
+
+    return ErrFailed
+}
+
+// Touch resets m&apos;s expiry to the expiry value.
+// It is a run-time error if m is not locked on entry to Touch.
+// It returns the status of the touch
+func (m *Mutex) Touch() bool {        // 重置锁的有效期到默认的值
+    m.nodem.Lock()
+    defer m.nodem.Unlock()
+
+    value := m.value
+    if value == &quot;&quot; {
+        panic(&quot;redsync: touch of unlocked mutex&quot;)
+    }
+
+    expiry := m.Expiry
+    if expiry == 0 {
+        expiry = DefaultExpiry
+    }
+    reset := int(expiry / time.Millisecond)
+
+    n := 0
+    for _, node := range m.nodes {
+        if node == nil {
+            continue
+        }
+
+        conn := node.Get()
+        reply, err := touchScript.Do(conn, m.Name, value, reset)
+        conn.Close()
+        if err != nil {
+            continue
+        }
+        if reply != &quot;OK&quot; {
+            continue
+        }
+        n++
+    }
+    if n &gt;= m.Quorum {
+        return true
+    }
+    return false
+}
+
+// Unlock unlocks m.
+// It is a run-time error if m is not locked on entry to Unlock.
+// It returns the status of the unlock
+func (m *Mutex) Unlock() bool {
+    m.nodem.Lock()            // 使用本地锁来保护分布式锁
+    defer m.nodem.Unlock()
+
+    value := m.value
+    if value == &quot;&quot; {
+        panic(&quot;redsync: unlock of unlocked mutex&quot;)
+    }
+
+    m.value = &quot;&quot;
+    m.until = time.Unix(0, 0)
+
+    n := 0
+    for _, node := range m.nodes {        // 对每一个节点释放锁  和 Lock 时不同的是，这里失败后没有重试
+        if node == nil {
+            continue
+        }
+
+        conn := node.Get()
+        status, err := delScript.Do(conn, m.Name, value)    // 调用 LUA 脚本释放对该节点的锁定
+        conn.Close()
+        if err != nil {
+            continue
+        }
+        if status == 0 {
+            continue
+        }
+        n++    // 成功释放对一个节点的锁定
+    }
+    if n &gt;= m.Quorum {
+        return true        // 成功释放掉大部分的节点就视为成功释放掉分布式锁****
+    }
+    return false
+}
+
+var delScript = redis.NewScript(1, `            LUA 脚本****
+if redis.call(&quot;get&quot;, KEYS[1]) == ARGV[1] then
+    return redis.call(&quot;del&quot;, KEYS[1])
+else
+    return 0
+end`)
+
+var touchScript = redis.NewScript(1, `
+if redis.call(&quot;get&quot;, KEYS[1]) == ARGV[1] then
+    return redis.call(&quot;set&quot;, KEYS[1], ARGV[1], &quot;xx&quot;, &quot;px&quot;, ARGV[2])
+else
+    return &quot;ERR&quot;
+end`)
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>仔细看了一下 redis 分布式锁的原理很简单，实现代码也比较简单。但其实其中还是有很多细节需要我们去理解。在使用的时候尽量弄清楚原理对于我们的代码还是有很大帮助的。 作者还在官方文档中讨论了分布式锁的一些其他特性，感兴趣的可以去看看并与作者交流。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://redis.io/topics/distlock" target="_blank" rel="external">Distributed locks</a> </p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>如果你觉得本文对你有帮助，欢迎打赏！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/img/weixin.JPG" alt="SleepyJimmy WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/img/zhifubao.JPG" alt="SleepyJimmy Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/分布式锁-源码阅读/" rel="tag"># -分布式锁 -源码阅读</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/23/Leetcode-28-Implement-strStr-求子串索引/" rel="next" title="Leetcode 28. Implement strStr() (求子串索引)">
+                <i class="fa fa-chevron-left"></i> Leetcode 28. Implement strStr() (求子串索引)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/27/shadowsocks-go源码阅读/" rel="prev" title="shadowsocks-go源码阅读">
+                shadowsocks-go源码阅读 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#distributed-locks-原理"><span class="nav-number">1.</span> <span class="nav-text">distributed locks 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用目标"><span class="nav-number">2.</span> <span class="nav-text">使用目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单的分布式锁"><span class="nav-number">3.</span> <span class="nav-text">简单的分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#锁的获取"><span class="nav-number">3.1.</span> <span class="nav-text">锁的获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁的释放"><span class="nav-number">3.2.</span> <span class="nav-text">锁的释放</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redlock"><span class="nav-number">4.</span> <span class="nav-text">Redlock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redlock-的-Go-实现"><span class="nav-number">5.</span> <span class="nav-text">redlock 的 Go 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">7.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/2017/03/31/redis-分布式锁/';
+          this.page.identifier = '2017/03/31/redis-分布式锁/';
+          this.page.title = 'redis 分布式锁';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

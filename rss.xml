@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ralph&#39;s blog</title>
+    <link>http://ralphbupt.github.io/</link>
+    <atom:link href="/rss.xml" rel="self" type="application/rss+xml"/>
+    
+    <description></description>
+    <pubDate>Wed, 28 Jun 2017 15:50:29 GMT</pubDate>
+    <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>geohash 的原理及应用</title>
+      <link>http://ralphbupt.github.io/2017/06/28/geohash-%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/</link>
+      <guid>http://ralphbupt.github.io/2017/06/28/geohash-%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/</guid>
+      <pubDate>Wed, 28 Jun 2017 15:49:52 GMT</pubDate>
+      <description>
+      
+        &lt;p&gt; geohash 是 Gustavo Niemeyer发明的一种对地理位置进行编码的算法， 是一种分层的空间数据结构，核心原理是将分成网格状的区域。并将一个区域编码成一定长度的字符串。 例如 将坐标 (57.64911, 10.40744)（lat, lon） 编码成11 
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/06/28/geohash-%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>gRPC之metadata(译)</title>
+      <link>http://ralphbupt.github.io/2017/05/27/gRPC%E4%B9%8Bmetadata/</link>
+      <guid>http://ralphbupt.github.io/2017/05/27/gRPC%E4%B9%8Bmetadata/</guid>
+      <pubDate>Sat, 27 May 2017 06:39:47 GMT</pubDate>
+      <description>
+      
+        &lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;单向 RPC&lt;/li&gt;
+&lt;li&gt;服务端流式 RPC&lt;/li&gt;
+&lt;li&gt;客户端流式 RPC单向&lt;/li&gt;
+&lt;li&gt;双向流 RPC&lt;
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/05/27/gRPC%E4%B9%8Bmetadata/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>Golang 并发模式Context</title>
+      <link>http://ralphbupt.github.io/2017/05/13/Golang-%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%BC%8FContext/</link>
+      <guid>http://ralphbupt.github.io/2017/05/13/Golang-%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%BC%8FContext/</guid>
+      <pubDate>Sat, 13 May 2017 07:48:53 GMT</pubDate>
+      <description>
+      
+        &lt;p&gt;context 在 http 服务， rpc 服务等功能中经常被用到。&lt;/p&gt;
+&lt;p&gt;在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/05/13/Golang-%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%BC%8FContext/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>etcd 服务注册与发现</title>
+      <link>http://ralphbupt.github.io/2017/05/04/etcd-%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0/</link>
+      <guid>http://ralphbupt.github.io/2017/05/04/etcd-%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0/</guid>
+      <pubDate>Thu, 04 May 2017 03:08:25 GMT</pubDate>
+      <description>
+      
+        &lt;p&gt;etcd 是一个分布式一致性的 key-value 存储技术， 被用来做配置共享和服务发现。有着以下优点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;简单： 使用 gRPC 实现了 面向用户的API（v3）， v2版本提供 CURL 可访问的 API（ HTTP+JSON ）&lt;/li&gt;
+&lt;
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/05/04/etcd-%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>git代理设置与取消</title>
+      <link>http://ralphbupt.github.io/2017/04/24/git%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%8F%96%E6%B6%88/</link>
+      <guid>http://ralphbupt.github.io/2017/04/24/git%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%8F%96%E6%B6%88/</guid>
+      <pubDate>Mon, 24 Apr 2017 09:34:16 GMT</pubDate>
+      <description>
+      
+        &lt;h2 id=&quot;git代理设置与取消&quot;&gt;&lt;a href=&quot;#git代理设置与取消&quot; class=&quot;headerlink&quot; title=&quot;git代理设置与取消&quot;&gt;&lt;/a&gt;git代理设置与取消&lt;/h2&gt;&lt;h3 id=&quot;设置http代理&quot;&gt;&lt;a href=&quot;#设置http代理&quot; cla
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/04/24/git%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE%E4%B8%8E%E5%8F%96%E6%B6%88/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>Leetcode 28. Implement strStr() (求子串索引)</title>
+      <link>http://ralphbupt.github.io/2017/04/23/Leetcode-28-Implement-strStr-%E6%B1%82%E5%AD%90%E4%B8%B2%E7%B4%A2%E5%BC%95/</link>
+      <guid>http://ralphbupt.github.io/2017/04/23/Leetcode-28-Implement-strStr-%E6%B1%82%E5%AD%90%E4%B8%B2%E7%B4%A2%E5%BC%95/</guid>
+      <pubDate>Sat, 22 Apr 2017 17:19:16 GMT</pubDate>
+      <description>
+      
+        &lt;h2 id=&quot;题目描述&quot;&gt;&lt;a href=&quot;#题目描述&quot; class=&quot;headerlink&quot; title=&quot;题目描述&quot;&gt;&lt;/a&gt;题目描述&lt;/h2&gt;&lt;p&gt;Implement strStr().&lt;/p&gt;
+&lt;p&gt;Returns the index of the first occu
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/04/23/Leetcode-28-Implement-strStr-%E6%B1%82%E5%AD%90%E4%B8%B2%E7%B4%A2%E5%BC%95/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>redis 分布式锁</title>
+      <link>http://ralphbupt.github.io/2017/03/31/redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+      <guid>http://ralphbupt.github.io/2017/03/31/redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+      <pubDate>Fri, 31 Mar 2017 06:38:41 GMT</pubDate>
+      <description>
+      
+        &lt;h2 id=&quot;distributed-locks-原理&quot;&gt;&lt;a href=&quot;#distributed-locks-原理&quot; class=&quot;headerlink&quot; title=&quot;distributed locks 原理&quot;&gt;&lt;/a&gt;distributed locks 原理&lt;/h2&gt;&lt;
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/03/31/redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>shadowsocks-go源码阅读</title>
+      <link>http://ralphbupt.github.io/2017/03/27/shadowsocks-go%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</link>
+      <guid>http://ralphbupt.github.io/2017/03/27/shadowsocks-go%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
+      <pubDate>Mon, 27 Mar 2017 09:10:15 GMT</pubDate>
+      <description>
+      
+        &lt;h1 id=&quot;shadowsocks-原理概述&quot;&gt;&lt;a href=&quot;#shadowsocks-原理概述&quot; class=&quot;headerlink&quot; title=&quot;shadowsocks 原理概述&quot;&gt;&lt;/a&gt;shadowsocks 原理概述&lt;/h1&gt;&lt;p&gt;网上关于墙的原理分析有很多不
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/03/27/shadowsocks-go%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>redis协议解析</title>
+      <link>http://ralphbupt.github.io/2017/03/23/redis%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</link>
+      <guid>http://ralphbupt.github.io/2017/03/23/redis%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</guid>
+      <pubDate>Thu, 23 Mar 2017 14:29:08 GMT</pubDate>
+      <description>
+      
+        &lt;p&gt;前段时间看了 redis cluster的一些原理，感觉真的很有意思，作者提到了目前的 cluster 客户端还不多，本着学习的目的决定试着从零用Go写一个 redis cluster client 试试。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;目标&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;支
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/03/23/redis%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>redis cluster 学习笔记</title>
+      <link>http://ralphbupt.github.io/2017/03/08/redis-cluster/</link>
+      <guid>http://ralphbupt.github.io/2017/03/08/redis-cluster/</guid>
+      <pubDate>Wed, 08 Mar 2017 07:52:18 GMT</pubDate>
+      <description>
+      
+        &lt;ul&gt;
+&lt;li&gt;&lt;p&gt;redis cluster 是 redis 提供的分布式数据库方案，通过在多个 redis 节点之间分片(sharding)来进行数据共享。并能在部分节点故障的情况下继续运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;redis 集群的基本存储单位是槽（slot
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/03/08/redis-cluster/#disqus_thread</comments>
+    </item>
+    
+    <item>
+      <title>grpc学习笔记</title>
+      <link>http://ralphbupt.github.io/2017/03/02/grpc%E5%AD%A6%E4%B9%A0/</link>
+      <guid>http://ralphbupt.github.io/2017/03/02/grpc%E5%AD%A6%E4%B9%A0/</guid>
+      <pubDate>Thu, 02 Mar 2017 15:56:18 GMT</pubDate>
+      <description>
+      
+        &lt;h2 id=&quot;RPC简介&quot;&gt;&lt;a href=&quot;#RPC简介&quot; class=&quot;headerlink&quot; title=&quot;RPC简介&quot;&gt;&lt;/a&gt;RPC简介&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;远程过程调用&lt;/strong&gt;(&lt;em&gt;Remote Procedure Call,RP
+      
+      </description>
+      
+      <comments>http://ralphbupt.github.io/2017/03/02/grpc%E5%AD%A6%E4%B9%A0/#disqus_thread</comments>
+    </item>
+    
+  </channel>
+</rss>
