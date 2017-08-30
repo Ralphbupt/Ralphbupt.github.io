@@ -356,7 +356,7 @@
 </code></pre></li>
 </ul>
 <p>PS : 上述的状态迁移是由客户端主动断开连接才会出现的情况，虽然通常情况下都是客户端主动断开连接， 如果是服务端断开连接，（比如 HTTP/1.0）则交换两者 ESTABLISHED 之后的状态迁移。文章接下来都默认是客户端主动断开连接。</p>
-<p><img src="./resource/image/tcp分组交换.jpeg" alt="tcp 连接的分组交换"></p>
+<p><img src="img/tcp分组交换.jpeg" alt="tcp 连接的分组交换"></p>
 <h2 id="TCP-的三次握手"><a href="#TCP-的三次握手" class="headerlink" title="TCP 的三次握手"></a>TCP 的三次握手</h2><p>在一次TCP 连接建立需要三个 packet</p>
 <ol>
 <li><p>服务端掉用 socket() 函数创建 socket, 调用 bind() 绑定了端口， 此时服务端的 socket 处于 <strong>CLOSED</strong>  。 服务端再掉用 listen(), socket 进入 <strong>LISTEN</strong>。  </p>
@@ -386,7 +386,7 @@
 <li><p>服务端在收到 ACK 后，进入 <strong>CLOSED</strong>， 连接断开。 </p>
 </li>
 </ol>
-<p><img src="./resource/image/tcp.png" alt="tcp 状态转换题"></p>
+<p><img src="img/tcp.png" alt="tcp 状态转换题"></p>
 <p>在上面的状态转换图中， 需要关注的通常是 <strong>TIME_WAIT</strong> 和 <strong>CLOSE_WAIT</strong></p>
 <h2 id="sockt-pair"><a href="#sockt-pair" class="headerlink" title="sockt pair"></a>sockt pair</h2><p>一个tcp的 socket pair 是一个定义连接的两个端点的四元组:本地IP 本地端口 远端IP 远端端口。 一个 socket pair 唯一标志一个网络上的 tcp 连接。</p>
 <h2 id="TIME-WAIT"><a href="#TIME-WAIT" class="headerlink" title="TIME_WAIT"></a>TIME_WAIT</h2><p>MSL maximum segment lifetime）指得是任何 IP 数据包能够在 internet 中存活的最大时间。因为每个数据报中包含一个字段 8 位的 TTL字段。最大值为 255。 我们假设拥有最大跳数 255 的分组在网络中不可能超过 MSL 秒。</p>
