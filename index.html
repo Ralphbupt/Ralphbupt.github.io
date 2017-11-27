@@ -263,6 +263,296 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/11/27/etcd学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SleepyJimmy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/wmm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ralph's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/27/etcd学习笔记/" itemprop="url">etcd学习笔记（gRPC服务发现和负载均衡）</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-27T11:33:24+08:00">
+                2017-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/27/etcd学习笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/27/etcd学习笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>etcd 和 grpc 负载均衡学习笔记</p>
+<h1 id="etcd"><a href="#etcd" class="headerlink" title="etcd"></a>etcd</h1><p>etcd 是一个 分布式的 key-value 数据库</p>
+<h2 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h2><p>etcd 设计时主要考虑两个目标</p>
+<ul>
+<li>可靠的存储<strong>不频繁</strong>更新的数据</li>
+<li>提供可靠的监控查询 （监控键值对的变化）</li>
+</ul>
+<p>为了提供轻量级的快照和监控键值对的历史记录， etcd 暴露键值对的历史版本。一个持久化、多版本、分布式的数据模型适合这些案例</p>
+<p>etcd 存储了一个多版本持久化的 store 中存取数据，每一次对 key 的修改不会替换原来的值，而是生成一个新的结构，所有过去的版本的数值在这次修改后仍然可以被获取并且监听。为了防止这个 store 随着时间越来越大要存储的数据越来越大，store 会将老版本的数据被压缩到一个叫 shed 的地方。</p>
+<h3 id="逻辑视图"><a href="#逻辑视图" class="headerlink" title="逻辑视图"></a>逻辑视图</h3><p>store 的逻辑视图是一个扁平的二进制 键空间，键空间根据字符做了排序，因此查询的消耗很低</p>
+<p>键空间的维护开很多版本，每一次对对这个键值的原子修改操作都在健空间生成一份新的修订，所有之前版本修订都保持不变。所有旧的版本数据仍然可以被获取到，但是当 store 被压缩到 shed 中的时候， 修订将会被移除。</p>
+<p>一个 key 的生命周期一直有一个 generation， 如果新建一个之前不存在的 key ， 那么这个 key 的generation 是 1， 每一次对这个 key 的修改都会将 增加这个 key 的 generation。 删除一个 key 将产生一个 key 的墓碑， 一旦压缩发生后，所有在压缩之前发生的修订都会被删除。</p>
+<h3 id="物理视图"><a href="#物理视图" class="headerlink" title="物理视图"></a>物理视图</h3><p>etcd 将物理数据存储在 b+树中， 每一次修订只包括了这次和上一次修订的变化。 每次修定对应树中的多个 key。</p>
+<p>键值对的 key 是一个三元组 （major， sub, type ）。 其中 major 对应每一次修订， sub 区分修订中的不同key。 type 是一些特殊值的前缀，value 记录了和上一次修订的差值。 压缩则移除过期的键值对</p>
+<p>etcd 在内存中也建立了一份 b树索引， 这样能够让对key 的查询变得高效。 b数 的key 就是 store 暴露给用户的 key</p>
+<h2 id="硬件推荐"><a href="#硬件推荐" class="headerlink" title="硬件推荐"></a>硬件推荐</h2><ul>
+<li>cpu 需求比较低，通常两到四核就够用了，如果负载很高，可以考虑用 8或16核的机器</li>
+<li>内存 内存消耗也不高，8G基本已经够用</li>
+<li>磁盘 磁盘对于 etcd 的性能和稳定性至关重要，首先是写入延迟对于 etcd 的性能影响很大。一般情况下硬盘的带宽能满足我们的需求， 如果可以，最好使用 固态硬盘， 不论对于固态硬盘还是机械硬盘， RAID 0 都能提升效率。对于至少三个节点的机器来说，复制和备份都不太重要。 etcd 本身就能保证高可用性</li>
+<li>对于多节点的 etcd 来说， 低延迟的网络能够提升写入速率， 高带宽的网络可以减少故障恢复的时间，因此最好将 etcd 集群部署在一个数据中心，内网带宽越高越好</li>
+</ul>
+<h2 id="etcd-网关"><a href="#etcd-网关" class="headerlink" title="etcd 网关"></a>etcd 网关</h2><h3 id="什么是-etcd-网关"><a href="#什么是-etcd-网关" class="headerlink" title="什么是 etcd 网关"></a>什么是 etcd 网关</h3><p>etcd 网关是一个简单的 TCP 代理， 网关是无状态和透明的，既不会检查客户端的请求也不会修改集群的响应。 网关支持远端多个 etcd 节点， 可以用简单的 轮询方式依次访问每一个节点，如果某个节点出错了， 网关可以对客户端隐藏失败细节。 以后可能会支持概率轮询等其他方式。</p>
+<h3 id="什么时候应该使用-etcd-网关模式"><a href="#什么时候应该使用-etcd-网关模式" class="headerlink" title="什么时候应该使用 etcd 网关模式"></a>什么时候应该使用 etcd 网关模式</h3><p>当一台机器上有多个应用程序都需要使用 etcd 的时候，每一个程序都需要知道 etcd 的地址， 如果 etcd 的地址修改了，那么每一个应用都需要修改 etcd 的地址。 如果在该机器上部署一个 etcd 网关节点，当 etcd 远端地址修改的时候，只用修改每一台机器上的 etcd 远端地址就行了。</p>
+<h3 id="什么时候不应该使用网关模式"><a href="#什么时候不应该使用网关模式" class="headerlink" title="什么时候不应该使用网关模式"></a>什么时候不应该使用网关模式</h3><ul>
+<li>追求性能 网关模式并没有为了考虑提升性能而设计。 不提供缓存，合并，和批处理等操作。 将来可能会开发带缓存的代理网关。</li>
+<li>运行一个集群管理系统的时候 高级的集群管理系统 如k8s 等原生支持服务发现功能， 应用可以通过 系统管理的 DNS 或者虚拟 IP 来访问 etcd 节点。</li>
+</ul>
+<h1 id="grpc-负载均衡与服务发现"><a href="#grpc-负载均衡与服务发现" class="headerlink" title="grpc 负载均衡与服务发现"></a>grpc 负载均衡与服务发现</h1><p>为了构建高可用，高性能的后段服务，通常采用负载均衡、服务发现、容错处理等机制。通常有以下三种负载均衡方式</p>
+<h2 id="代理模式-（Proxy-Model）"><a href="#代理模式-（Proxy-Model）" class="headerlink" title="代理模式 （Proxy Model）"></a>代理模式 （Proxy Model）</h2><p>通常使用一个独立的客户端来代理所有的请求，通常采用专门的硬件或者 HAproxy 等软件来实现。客户端不直接请求服务端，而是向代理发送请求，代理再将所有的请求按照某种策略如轮询等方式发送给服务端并将服务端的结果返回给客户端。 代理模式通常具备健康检查能力，可以移除故障的服务端实例。缺点在于：</p>
+<ul>
+<li>代理模式需要额外的资源，因为它需要复制请求和响应。</li>
+<li>在客户端和服务端之间增加了一级，有一定的性能损耗并且会增加延迟。</li>
+</ul>
+<h2 id="进程内负载均衡（Balancing-aware-Client）"><a href="#进程内负载均衡（Balancing-aware-Client）" class="headerlink" title="进程内负载均衡（Balancing-aware Client）"></a>进程内负载均衡（Balancing-aware Client）</h2><p>这种厚客户端将负载均衡的逻辑部分更多的放到了客户端来做， 客户端可以包含多种负载均衡的策略（轮询、随机等）来从服务列表中选取。 客户端静态的配置了服务端列表，或者客户端通过命名解析系统维护服务端。这种情况下就是客户端负责从列表中选取服务。客户端直接连接服务端，开销比第一种模式低。该方案的问题在于：</p>
+<ul>
+<li>开发成本，  开发和维护多版本、多语言的客户端的成本很高。 </li>
+<li>一些算法需要客户端和服务端之间维持通信，客户端会变的更加复杂</li>
+</ul>
+<h2 id="外部负载均衡"><a href="#外部负载均衡" class="headerlink" title="外部负载均衡"></a>外部负载均衡</h2><p>这种情况是前两种模式的折中，将负载均衡的逻辑独立出来交给单独的均衡器。 均衡器负责和后端服务保持通信，收集服务的负载和状态信息。 客户端通过均衡器来选择服务列表。相比第一种方案，客户端仍然是直接连接服务端，不会有额外的开销。 客户端也不需要为不同语言和不同版本来维护不同的库。</p>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><p>gRPC 并没有直接实现负载均衡和服务发现的功能，但是已经提供了自己的设计思路。已经为命名解析和负载均衡提供了接口。 我们可以用 etcd 方便的实现 gRPC 的负载均衡。和服务发现。 </p>
+<p><img src="https://raw.githubusercontent.com/grpc/grpc/master/doc/images/load-balancing.png" alt=""></p>
+<ul>
+<li>启动的时候 gRPC 客户端发起一个命名解析请求。 命名将被解析成一个或者多个 IP 地址， 每个地址将被标明他是一个负载均衡器的地址还是后端服务的地址，每个地址还标明客户端将使用的负载均衡策略</li>
+<li>客户端实例化负载均衡策略（如果其中命名解析器返回的任何一个地址是负载均衡的地址，客户端将会使用 grpclb 策略， 否则 客户端将会使用服务器配置的负载均衡策略。 如果服务没有配置负载均衡策略，客户端将默认使用第一个可用的服务器地址）</li>
+<li>负载均衡策略将为每一个服务器地址创建一个子通道<ul>
+<li>对于除了 grpclb 之外的， 除了均衡器的地址之外，所有后端服务都有一个子通道。</li>
+<li>对于grpclb 而言 <ul>
+<li>客户端从解析器返回的均衡器地址中打开一个流，客户端向均衡器请求一组可以直连的服务器地址</li>
+<li>gRPC 后端服务向均衡器报告自己的负载情况</li>
+<li>均衡器返回一组服务列表，     grpclb 再为每一个后端服务创建一个子通道</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>对于每一个 RPC 请求，负载均衡策略决定 RPC 请求将被送到哪一个子通道<ul>
+<li>对于grpclb 而言， 客户端将会按照grpclb 返回的后端服务顺序依次发送每一个请求。               </li>
+</ul>
+</li>
+</ul>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><p>我们用 grpc 可以很方便的实现服务发现和域名解析， 此处使用的是外部负载均衡</p>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><pre><code>import (
+    &quot;github.com/coreos/etcd/clientv3&quot;
+    etcdnaming &quot;github.com/coreos/etcd/clientv3/naming&quot;
+
+    &quot;google.golang.org/grpc&quot;
+)
+
+...
+
+cli, cerr := clientv3.NewFromURL(&quot;http://localhost:2379&quot;)
+r := &amp;etcdnaming.GRPCResolver{Client: cli}
+b := grpc.RoundRobin(r)
+conn, gerr := grpc.Dial(&quot;my-service&quot;, grpc.WithBalancer(b))
+</code></pre><p>在上面的例子中，客户端代码很简洁，用 etcd 实现命名解析，并用轮询的方式实现负载均衡。 服务的名字叫 “my-service”</p>
+<h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><ul>
+<li><p>可以用手动的方式注册服务 </p>
+<pre><code>ETCDCTL_API=3 etcdctl put my-service/1.2.3.4:5678 &apos;{&quot;Addr&quot;:&quot;1.2.3.4:5678&quot;,&quot;Metadata&quot;:&quot;...&quot;}&apos;
+</code></pre></li>
+<li><p>只要往 etcd 中写入 以 “my-service”为前缀的key，客户端就会根据 value 中的 Addr 进行拨号</p>
+<pre><code>r.Update(context.TODO(), &quot;my-service&quot;, naming.Update{Op: naming.Add, Addr: &quot;1.2.3.4&quot;, Metadata: &quot;...&quot;})
+</code></pre></li>
+<li><p>需要删除服务时， 将 etcd 中的 key 删除即可</p>
+</li>
+<li><p>通常在生产环境中，我们需要当服务启动时将服务添加到可用列表中， 当服务挂掉之后要及时的从可用列表中删除， 当服务端不可用时，负载均衡器需要及时感知。 通常的策略是 启动时申请一个key， 然后不断的更新 key 的租约。</p>
+</li>
+</ul>
+<pre><code>type Service struct {
+    Addr         string `json:&quot;Addr&quot;`
+    Metadate     string `json:&quot;Metadate&quot;`
+}
+
+// Register
+func Register(name string, host string, port int, addr string, interval time.Duration, ttl int) error {
+    service  := Service{
+        Addr: fmt.Sprintf(&quot;%s:%d&quot;, host, port),
+        Metadate: &quot;...&quot;,
+    }
+    bts, err := json.Marshal(service)
+    if err != nil{
+        return err
+    }
+
+    serviceValue := string(bts)
+    serviceKey = fmt.Sprintf(&quot;%s/%s&quot;, name, serviceValue)
+
+    // get endpoints for register dial address
+    client, err := etcd3.New(etcd3.Config{
+        Endpoints: []string{addr},
+    })
+    if err != nil {
+        return fmt.Errorf(&quot;grpclb: create etcd3 client failed: %v&quot;, err)
+    }
+
+    go func() {
+        // invoke self-register with ticker
+        ticker := time.NewTicker(interval)
+        for {
+            // minimum lease TTL is ttl-second
+            resp, _ := client.Grant(context.TODO(), int64(ttl))
+            // should get first, if not exist, set it
+            _, err := client.Get(context.Background(), serviceKey)
+            if err != nil {
+                if err == rpctypes.ErrKeyNotFound {
+                    if _, err := client.Put(context.TODO(), serviceKey, serviceValue, etcd3.WithLease(resp.ID)); err != nil {
+                        log.Printf(&quot;grpclb: set service &apos;%s&apos; with ttl to etcd3 failed: %s&quot;, name, err.Error())
+                    }
+                } else {
+                    log.Printf(&quot;grpclb: service &apos;%s&apos; connect to etcd3 failed: %s&quot;, name, err.Error())
+                }
+            } else {
+                // refresh set to true for not notifying the watcher
+                if _, err := client.Put(context.Background(), serviceKey, serviceValue, etcd3.WithLease(resp.ID)); err != nil {
+                    log.Printf(&quot;grpclb: refresh service &apos;%s&apos; with ttl to etcd3 failed: %s&quot;, name, err.Error())
+
+                }
+            }
+            select {
+            case &lt;-stopSignal:
+                return
+            case &lt;-ticker.C:
+            }
+        }
+    }()
+
+    return nil
+}
+
+// UnRegister delete registered service from etcd
+func UnRegister() error {
+    stopSignal &lt;- true
+    stopSignal = make(chan bool, 1) // just a hack to avoid multi UnRegister deadlock
+    var err error
+    if _, err := client.Delete(context.Background(), serviceKey); err != nil {
+        log.Printf(&quot;grpclb: deregister &apos;%s&apos; failed: %s&quot;, serviceKey, err.Error())
+    } else {
+        log.Printf(&quot;grpclb: deregister &apos;%s&apos; ok.&quot;, serviceKey)
+    }
+    return err
+}
+</code></pre><p>写完之后，本地运行多个服务端，可以看到 lb 将 RPC 请求依次转发到每一个服务端。 动态的添加或删除服务端进程，客服端能通过 lb 感知到服务端的变化。</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
+<li><a href="https://coreos.com/etcd/docs/latest/dev-guide/grpc_naming.html" target="_blank" rel="external">https://coreos.com/etcd/docs/latest/dev-guide/grpc_naming.html</a></li>
+<li><a href="https://github.com/grpc/grpc/blob/master/doc/load-balancing.md" target="_blank" rel="external">https://github.com/grpc/grpc/blob/master/doc/load-balancing.md</a></li>
+<li><a href="https://segmentfault.com/a/1190000008672912" target="_blank" rel="external">https://segmentfault.com/a/1190000008672912</a></li>
+<li><a href="https://coreos.com/etcd/docs/latest/learning/data_model.html" target="_blank" rel="external">https://coreos.com/etcd/docs/latest/learning/data_model.html</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/08/28/TCP-的状态转换/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2483,307 +2773,6 @@ func main() {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/03/08/redis-cluster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SleepyJimmy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/img/wmm.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Ralph's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/03/08/redis-cluster/" itemprop="url">redis cluster 学习笔记</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-08T15:52:18+08:00">
-                2017-03-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/03/08/redis-cluster/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/03/08/redis-cluster/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><p>redis cluster 是 redis 提供的分布式数据库方案，通过在多个 redis 节点之间分片(sharding)来进行数据共享。并能在部分节点故障的情况下继续运行。</p>
-</li>
-<li><p>redis 集群的基本存储单位是槽（slot），一个集群有2^14=16384个槽。每一个槽的key存放在集群中的唯一一个master节点中，每一个槽还有0~N个slave节点。 </p>
-</li>
-</ul>
-<h2 id="集群简介"><a href="#集群简介" class="headerlink" title="集群简介"></a>集群简介</h2><p><img src="/img/redis-cluster-1.png" alt="集群简介"></p>
-<ul>
-<li>redis集群每个节点都和其他节点保持连接，需要两个端口。其中一个数据端口（例如7000用来为客户端提供服务以及同其他服务端交换数据。另外一个总线端口（数据端口号+10000，其中偏移量10000是固定的）用来在节点之间传送控制信息。要让redis集群系统正常运行，需要：<ul>
-<li>每个节点的数据端口对 Client <strong>以及</strong>其他集群节点可见</li>
-<li>每个节点的总线端口对其他节点可见</li>
-</ul>
-</li>
-</ul>
-<h2 id="redis-cluster-数据分片（sharding）"><a href="#redis-cluster-数据分片（sharding）" class="headerlink" title="redis cluster 数据分片（sharding）"></a>redis cluster 数据分片（sharding）</h2><ul>
-<li>redis 集群有16384个哈希槽（hash slot），其中散列算法是简单的取 key 的 CRC16 模 16384</li>
-<li>集群中的每一个节点负责哈希槽的一个子集</li>
-<li>slot 可以动态的迁移、删除和分配</li>
-<li>slot 的设计使得集群中能动态的添加和删除节点，例如：<ul>
-<li>当添加新的节点 nodeD 时，只需要从节点 nodeA,nodeB,nodeC 中移动一些 slot 到 nodeD去，这样就实现了集群的扩容。</li>
-<li>当需要删除节点 nodeA 时，将 nodeA 中的 slot 移动到 nodeB，和nodeC中。当nodeA为空之后，可以从集群中删除nodeA</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>redis cluster 支持多键（MGET MSET 等）操作，但前提是–单次命令执行（command execution）或者整个  transection 中的 key 属于同一个哈希槽。我们可以使用 hash tag 来强制多个key使用同一个哈希槽。<ul>
-<li>hash tag 的 简单语法是 只有key 中 <strong><em>{ }</em></strong>中的部分才被用来做hash，例如 key <strong><em>{user1000}.following</em></strong> 和 <strong><em>{user1000}.followers</em></strong> 会被 hash 到同一个哈希槽中去，因为{}中的内容相同。</li>
-</ul>
-</li>
-</ul>
-<h2 id="redis-cluster-主从模式"><a href="#redis-cluster-主从模式" class="headerlink" title="redis cluster 主从模式"></a>redis cluster 主从模式</h2><ul>
-<li>redis cluster 采用主从模式，其中每一个槽有 1（主节点本身） ~ N(N-1个从节点)</li>
-<li>当主节点故障之后，系统会从该主节点的从节点中选举出一个从节点作为新的主节点。接管故障主节点负责处理的槽。当故障的节点恢复后，自动变为从节点</li>
-<li>当一个哈希槽的所有节点，主节点和从节点都故障之后，系统不能正常运行</li>
-</ul>
-<h2 id="redis-cluster-配置参数"><a href="#redis-cluster-配置参数" class="headerlink" title="redis cluster 配置参数"></a>redis cluster 配置参数</h2><ul>
-<li>redis集群配置文件中，需要修改的最小配置有<ul>
-<li>port:        端口</li>
-<li>cluster-enabled：    开启 cluster    </li>
-<li>cluster-config-file: 集群配置文件</li>
-<li>cluster-node-timeout： 节点超时时间(ms)</li>
-</ul>
-</li>
-</ul>
-<h2 id="redis-cluster-搭建"><a href="#redis-cluster-搭建" class="headerlink" title="redis cluster 搭建"></a>redis cluster 搭建</h2><ul>
-<li>redis 的 src 目录下提供了 create-cluster 脚本来创建简单的的 demo <ol>
-<li>create-cluster start<ol>
-<li>create-cluster create     // 命令1和2开启集群</li>
-<li>create-cluster stop        // 停止集群</li>
-</ol>
-</li>
-</ol>
-</li>
-<li><p>redis cluster 手动创建</p>
-<pre><code>mkdir    cluster-test
-cd         cluster-test
-mkdir 7000 7001 7002 7003 7004 7005
-</code></pre><p>  在每一个文件夹中创建一个 redis.conf ，替换其中的端口号为7000~7005 ，修改 cluster 相关配置</p>
-<p>  创建启动脚本 </p>
-<pre><code>vim start_cluster.sh
-cd 7000/
-nohup ./redis-server redis.conf &amp;
-cd ../7001
-nohup ./redis-server redis.conf &amp;
-cd ../7002
-nohup ./redis-server redis.conf &amp;
-cd ../7003
-nohup ./redis-server redis.conf &amp;
-cd ../7004
-nohup ./redis-server redis.conf &amp;
-cd ../7005
-nohup ./redis-server redis.conf &amp;
-cd ../
-ps -aux|grep redis
-</code></pre><p>  关闭集群，现在重启集群需要kill掉所有进程</p>
-<pre><code>ps -aux| grep redis-server | grep -v grep | cut -c 9-15 | xargs kill -9
-</code></pre><p>  创建集群</p>
-<pre><code>./redis-trib.rb create --replicas 1 127.0.0.1:7000 127.0.0.1:7001 \
-127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005
-</code></pre></li>
-</ul>
-<h2 id="redis-集群管理"><a href="#redis-集群管理" class="headerlink" title="redis 集群管理"></a>redis 集群管理</h2><ul>
-<li><p>redis-trib.rb 是 redis 作者用 ruby 实现的 redis cluster 管理工具。<br>用此工具，我们能轻松的完成节点的添加、删除、slot的管理等。常用命令如下：</p>
-<pre><code>create          host1:port1 ... hostN:portN        // 创建集群    
-check           host:port                        // 检查集群
-info            host:port                        // 查看集群
-fix             host:port                        // 修复集群
-reshard         host:port                        // 迁移slot
-rebalance       host:port                        // 平衡节点slot数量
-add-node        new_host:new_port existing_host:existing_port    // 添加节点
-del-node        host:port node_id                // 删除节点
-set-timeout     host:port milliseconds            // 设置节点心跳超时使劲按
-</code></pre></li>
-<li><p>此外也能通过 <a href="https://redis.io/commands#cluster" target="_blank" rel="external">CLUSTER</a> 相关命令来管理集群，使用这些命令需要登录</p>
-<pre><code>//集群(cluster)  
-CLUSTER INFO 打印集群的信息  
-CLUSTER NODES 列出集群当前已知的所有节点（node），以及这些节点的相关信息。   
-
-//节点(node)  
-CLUSTER MEET &lt;ip&gt; &lt;port&gt; 将 ip 和 port 所指定的节点添加到集群当中，让它成为集群的一份子。  
-CLUSTER FORGET &lt;node_id&gt; 从集群中移除 node_id 指定的节点。  
-CLUSTER REPLICATE &lt;node_id&gt; 将当前节点设置为 node_id 指定的节点的从节点。  
-CLUSTER SAVECONFIG 将节点的配置文件保存到硬盘里面。   
-
-//槽(slot)  
-CLUSTER ADDSLOTS &lt;slot&gt; [slot ...] 将一个或多个槽（slot）指派（assign）给当前节点。  
-CLUSTER DELSLOTS &lt;slot&gt; [slot ...] 移除一个或多个槽对当前节点的指派。  
-CLUSTER FLUSHSLOTS 移除指派给当前节点的所有槽，让当前节点变成一个没有指派任何槽的节点。  
-CLUSTER SETSLOT &lt;slot&gt; NODE &lt;node_id&gt; 将槽 slot 指派给 node_id 指定的节点，如果槽已经指
-                                      槽派给另一个节点，那么先让另一个节点删除该槽&gt;，然后再进行指派。  
-CLUSTER SETSLOT &lt;slot&gt; MIGRATING &lt;node_id&gt; 将本节点的槽 slot 迁移到 node_id 指定的节点中。  
-CLUSTER SETSLOT &lt;slot&gt; IMPORTING &lt;node_id&gt; 从 node_id 指定的节点中导入槽 slot 到本节点。  
-CLUSTER SETSLOT &lt;slot&gt; STABLE 取消对槽 slot 的导入（import）或者迁移（migrate）。   
-
-//键 (key)  
-CLUSTER KEYSLOT &lt;key&gt; 计算键 key 应该被放置在哪个槽上。  
-CLUSTER COUNTKEYSINSLOT &lt;slot&gt; 返回槽 slot 目前包含的键值对数量。  
-CLUSTER GETKEYSINSLOT &lt;slot&gt; &lt;count&gt; 返回 count 个 slot 槽中的键。  
-</code></pre></li>
-</ul>
-<h2 id="redis-cluster-客户端使用原理"><a href="#redis-cluster-客户端使用原理" class="headerlink" title="redis cluster 客户端使用原理"></a>redis cluster 客户端使用原理</h2><ul>
-<li><p>redis cluster 需要客户端能够解析 cluster 协议，主要包括：</p>
-<ol>
-<li>MOVE 和 ASK 命令的重定向， 连接超时的处理</li>
-<li>槽、节点缓存的维护。连接的管理等。                 </li>
-</ol>
-</li>
-</ul>
-<p><img src="/img/image_2.png" alt="客户端处理流程">    </p>
-<ul>
-<li>向 Redis 集群发送的任何含 key 命令 (如 get, set, llen, mget, mset, rename, rpoplpush 等) 时, 先对计算 key 的槽位编号, 将指令发送给对应槽位的master节点. 如果key存在，返回如果指令发送到了错误的节点, 该节点并不会处理请求, 而是会返回重定向(MOVED,  ASK)错误信息.</li>
-</ul>
-<pre><code>const kClusterSlots    = 16384
-type Cluster struct {
-    slots        [kClusterSlots]*redisNode        // 槽对应的节点信息
-    nodes        map[string]*redisNode
-    ...
-    ...
-}
-</code></pre><ul>
-<li><p>例如</p>
-<pre><code>MOVED 16384 127.0.0.1：7001
-ASK 16384 127.0.0.1：7001
-</code></pre></li>
-<li><p>MOVED 代表槽 i 的负责权<strong>已经</strong>从节点 A 转移到节点 B。当客户端收到了槽的 MOVED 错误之后，应该将本地缓存的节点和槽的对应信息也更新。即下次遇到槽 i 的命令请求，直接向 SLOT-B 发送命令。</p>
-</li>
-<li>ACK 代表槽 i <strong>正在</strong>从节点 A转移到节点 B。所以当客户端收到了 ASK 之后，只是这次命令向节点 B 请求，而且必须先发送 ASKING 命令。 接下来槽 i 的命令仍然向节点 A 请求。</li>
-<li>超时： 超时后随机向新的节点更新槽的信息。                   </li>
-</ul>
-<h2 id="redis-cluster-的使用"><a href="#redis-cluster-的使用" class="headerlink" title="redis cluster 的使用"></a>redis cluster 的使用</h2><ul>
-<li>当搭建好 redis cluste 后，使用redis cluster 就变得很简单，作者提到了当前 client libraries 实现。以 redis-go-cluster 为例：</li>
-<li><p>安装 redis-go-cluster </p>
-<pre><code>go get github.com/chasex/redis-go-cluster
-</code></pre></li>
-<li><p>使用 </p>
-<pre><code>import &quot;github.com/chasex/redis-go-cluster&quot;
-
-cluster, err := redis.NewCluster(
-&amp;redis.Options{
-StartNodes: []string{&quot;127.0.0.1:7000&quot;, &quot;127.0.0.1:7001&quot;, &quot;127.0.0.1:7002&quot;},
-ConnTimeout: 50 * time.Millisecond,
-ReadTimeout: 50 * time.Millisecond,
-WriteTimeout: 50 * time.Millisecond,
-KeepAlive: 16,
-AliveTime: 60 * time.Second,
-})
-
-_, err := cluster.Do(&quot;set&quot;, key, value)
-value, err := redis.Int(cluster.Do(&quot;GET&quot;, key))
-...
-</code></pre></li>
-</ul>
-<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
-<li><a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="external">https://redis.io/topics/cluster-tutorial</a>   最好的文档永远是官方的文档    </li>
-<li><a href="http://blog.csdn.net/dc_726/article/details/48552531" target="_blank" rel="external">http://blog.csdn.net/dc_726/article/details/48552531</a> 全面剖析Redis Cluster原理和应用</li>
-<li><a href="https://github.com/chasex/redis-go-cluster" target="_blank" rel="external">https://github.com/chasex/redis-go-cluster</a>    redis-go-cluster ,使用redigo</li>
-<li><a href="http://weizijun.cn/2016/01/08/redis%20cluster%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7redis-trib-rb%E8%AF%A6%E8%A7%A3/" target="_blank" rel="external">http://weizijun.cn/2016/01/08/redis%20cluster%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7redis-trib-rb%E8%AF%A6%E8%A7%A3/</a>   redis-trib.rb 的介绍</li>
-<li><a href="http://blog.51yip.com/nosql/1726.html" target="_blank" rel="external">http://blog.51yip.com/nosql/1726.html</a> redis cluster 节点管理  </li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2833,7 +2822,7 @@ value, err := redis.Int(cluster.Do(&quot;GET&quot;, key))
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2846,7 +2835,7 @@ value, err := redis.Int(cluster.Do(&quot;GET&quot;, key))
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
