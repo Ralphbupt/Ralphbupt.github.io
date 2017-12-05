@@ -1,0 +1,694 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Bootstrap Context MenuA context menu extension of Twitter Bootstrap made for everyone’s convenience. See a demo page. Installationbower install bootstrap-contextmenu Note: Requires bootstrap.css Usage">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ralph's Blog">
+<meta property="og:url" content="http://ralphbupt.github.io/raftscope/bootstrap-contextmenu/README.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="Bootstrap Context MenuA context menu extension of Twitter Bootstrap made for everyone’s convenience. See a demo page. Installationbower install bootstrap-contextmenu Note: Requires bootstrap.css Usage">
+<meta property="og:updated_time" content="2017-12-02T09:17:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ralph's Blog">
+<meta name="twitter:description" content="Bootstrap Context MenuA context menu extension of Twitter Bootstrap made for everyone’s convenience. See a demo page. Installationbower install bootstrap-contextmenu Note: Requires bootstrap.css Usage">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/raftscope/bootstrap-contextmenu/README.html"/>
+
+
+
+
+
+  <title> | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+  <header class="post-header">
+
+	<h2 class="post-title" itemprop="name headline"></h2>
+
+
+
+</header>
+
+    
+    
+      <h1 id="Bootstrap-Context-Menu"><a href="#Bootstrap-Context-Menu" class="headerlink" title="Bootstrap Context Menu"></a>Bootstrap Context Menu</h1><p>A context menu extension of Twitter Bootstrap made for everyone’s convenience.</p>
+<p>See a <a href="http://sydcanem.github.io/bootstrap-contextmenu/" target="_blank" rel="external">demo page</a>.</p>
+<h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h2><p><code>bower install bootstrap-contextmenu</code></p>
+<p>Note: Requires bootstrap.css</p>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="Via-data-attributes"><a href="#Via-data-attributes" class="headerlink" title="Via data attributes"></a>Via data attributes</h3><p>Add <code>data-toggle=&quot;context&quot;</code> to any element that needs a custom context menu and via CSS set <code>position: relative</code> to the element.</p>
+<p>Point <code>data-target</code> attribute to your custom context menu.</p>
+<p><code>&lt;div class=&quot;context&quot; data-toggle=&quot;context&quot; data-target=&quot;#context-menu&quot;&gt;&lt;/div&gt;</code></p>
+<h3 id="Via-Javascript"><a href="#Via-Javascript" class="headerlink" title="Via Javascript"></a>Via Javascript</h3><p>Call the context menu via JavaScript:</p>
+<pre><code>$(&apos;.context&apos;).contextmenu({
+  target:&apos;#context-menu&apos;, 
+  before: function(e,context) {
+    // execute code before context menu if shown
+  },
+  onItem: function(context,e) {
+    // execute on menu item selection
+  }
+})
+</code></pre><h3 id="Options"><a href="#Options" class="headerlink" title="Options"></a>Options</h3><p><code>target</code> - is the equivalent of the <code>data-target</code> attribute. It identifies the html of the menu that will be displayed. </p>
+<p><code>before</code> - is a function that is called before the context menu is displayed. If this function returns false, the context menu will not be displayed. It is passed two parameters,</p>
+<ul>
+<li><code>e</code> - the original event. (You can do an <code>e.preventDefault()</code> to cancel the browser event). </li>
+<li><code>context</code> - the DOM element where right click occured.</li>
+</ul>
+<p><code>onItem</code> - is a function that is called when a menu item is clicked. Useful when you want to execute a specific function when an item is clicked. It is passed two parameters,</p>
+<ul>
+<li><code>context</code> - the DOM element where right click occured.</li>
+<li><code>e</code> - the click event of the menu item, $(e.target) is the item element.</li>
+</ul>
+<p><code>scopes</code> - DOM selector for dynamically added context elements. See <a href="https://github.com/sydcanem/bootstrap-contextmenu/issues/56" target="_blank" rel="external">issue</a>.</p>
+<h3 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h3><p>All events are fired at the context’s menu. Check out <code>dropdown</code> plugin for<br>a complete description of events.</p>
+<ul>
+<li><code>show.bs.context</code> - This event fires immediately when the menu is opened. </li>
+<li><code>shown.bs.context</code> - This event is fired when the dropdown has been made visible to the user. </li>
+<li><code>hide.bs.context</code> - This event is fired immediately when the hide instance method has been called. </li>
+<li><code>hidden.bs.context</code> - This event is fired when the dropdown has finished being hidden from the user (will wait for CSS transitions, to complete).</li>
+</ul>
+<p>Sample</p>
+<pre><code>$(&apos;#myMenu&apos;).on(&apos;show.bs.context&apos;,function () {
+  // do something...
+});
+</code></pre><h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>Activate and specify selector for context menu</p>
+<pre><code>$(&apos;#main&apos;).contextmenu({&apos;target&apos;:&apos;#context-menu&apos;});
+</code></pre><p>Activate within a div, but not on spans</p>
+<pre><code>$(&apos;#main&apos;).contextmenu({
+  target: &apos;#context-menu2&apos;,
+  before: function (e, element, target) {
+      e.preventDefault();
+      if (e.target.tagName == &apos;SPAN&apos;) {
+          e.preventDefault();
+          this.closemenu();
+          return false;
+      }
+      return true;
+  }
+});
+</code></pre><p>Modify the menu dynamically</p>
+<pre><code>$(&apos;#main&apos;).contextmenu({
+  target: &quot;#myMenu&quot;,
+  before: function(e) { 
+    this.getMenu().find(&quot;li&quot;).eq(2).find(&apos;a&apos;).html(&quot;This was dynamically changed&quot;);
+  }
+});
+</code></pre><p>Show menu name on selection</p>
+<pre><code>$(&apos;#main&apos;).contextmenu({
+  onItem: function(context, e) {
+    alert($(e.target).text());
+  }
+});
+</code></pre><h3 id="License"><a href="#License" class="headerlink" title="License"></a>License</h3><p>MIT</p>
+
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Bootstrap-Context-Menu"><span class="nav-number">1.</span> <span class="nav-text">Bootstrap Context Menu</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Installation"><span class="nav-number">1.1.</span> <span class="nav-text">Installation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Usage"><span class="nav-number">1.2.</span> <span class="nav-text">Usage</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Via-data-attributes"><span class="nav-number">1.2.1.</span> <span class="nav-text">Via data attributes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Via-Javascript"><span class="nav-number">1.2.2.</span> <span class="nav-text">Via Javascript</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Options"><span class="nav-number">1.2.3.</span> <span class="nav-text">Options</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Events"><span class="nav-number">1.2.4.</span> <span class="nav-text">Events</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example"><span class="nav-number">1.3.</span> <span class="nav-text">Example</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#License"><span class="nav-number">1.3.1.</span> <span class="nav-text">License</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/raftscope/bootstrap-contextmenu/README.html';
+          this.page.identifier = 'raftscope/bootstrap-contextmenu/README.html';
+          this.page.title = '';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

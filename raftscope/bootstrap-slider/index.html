@@ -1,0 +1,1171 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Slider for Bootstrap Examples Page                                	/* Space out content a bit */ 		body { 		  padding-top: 20px; 		  padding-bottom: 20px; 		}  		h1 small">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ralph's Blog">
+<meta property="og:url" content="http://ralphbupt.github.io/raftscope/bootstrap-slider/index.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="Slider for Bootstrap Examples Page                                	/* Space out content a bit */ 		body { 		  padding-top: 20px; 		  padding-bottom: 20px; 		}  		h1 small">
+<meta property="og:updated_time" content="2017-12-02T09:17:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ralph's Blog">
+<meta name="twitter:description" content="Slider for Bootstrap Examples Page                                	/* Space out content a bit */ 		body { 		  padding-top: 20px; 		  padding-bottom: 20px; 		}  		h1 small">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/raftscope/bootstrap-slider/"/>
+
+
+
+
+
+  <title> | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+  <header class="post-header">
+
+	<h2 class="post-title" itemprop="name headline"></h2>
+
+
+
+</header>
+
+    
+    
+      <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Examples for bootstrap-slider plugin">
+    <meta name="author" content="">
+
+    <title>Slider for Bootstrap Examples Page</title>
+
+    <!-- core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-slider.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style type="text/css">
+    	/* Space out content a bit */
+		body {
+		  padding-top: 20px;
+		  padding-bottom: 20px;
+		}
+
+		h1 small {
+			font-size: 51%;
+		}
+
+		/* Everything but the jumbotron gets side spacing for mobile first views */
+		.header,
+		.marketing,
+		.footer {
+		  padding-left: 15px;
+		  padding-right: 15px;
+		}
+
+		/* Custom page header */
+		.header {
+		  border-bottom: 1px solid #e5e5e5;
+		}
+		/* Make the masthead heading the same height as the navigation */
+		.header h3 {
+		  margin-top: 0;
+		  margin-bottom: 0;
+		  line-height: 40px;
+		  padding-bottom: 19px;
+		}
+
+		/* Custom page footer */
+		.footer {
+		  padding-top: 19px;
+		  color: #777;
+		  border-top: 1px solid #e5e5e5;
+		}
+
+		/* Customize container */
+		.container {
+			min-width: 640px;
+		}
+		@media (min-width: 768px) {
+		  .container {
+		    max-width: 1000px;
+		  }
+		}
+		.container-narrow > hr {
+		  margin: 30px 0;
+		}
+
+		/* Main marketing message and sign up button */
+		.title {
+		  text-align: center;
+		  border-bottom: 1px solid #e5e5e5;
+		}
+
+		/* Responsive: Portrait tablets and up */
+		@media screen and (min-width: 768px) {
+		  /* Remove the padding we set earlier */
+		  .header,
+		  .footer {
+		    padding-left: 0;
+		    padding-right: 0;
+		  }
+		  /* Space out the masthead */
+		  .header {
+		    margin-bottom: 30px;
+		  }
+		  /* Remove the bottom border on the jumbotron for visual effect */
+		  .title {
+		    border-bottom: 0;
+		  }
+		}
+
+		.well {
+			background-color: #E0E0E0;
+		}
+
+		.slider-example {
+			padding: 10px 0;
+			margin: 35px 0;
+		}
+
+		#destroyEx5Slider, #ex6CurrentSliderValLabel, #ex7-enabled {
+			margin-left: 45px;
+		}
+
+		#ex6SliderVal {
+			color: green;
+		}
+    </style>
+
+    <style type="text/css">
+		/* Example 1 custom styles */
+		#ex1Slider .slider-selection {
+   			background: #BABABA;
+  		}
+
+    	/* Example 3 custom styles */
+		#RGB {
+    		height: 20px;
+    		background: rgb(128, 128, 128);
+  		}
+		#RC .slider-selection {
+		    background: #FF8282;
+		}
+		#RC .slider-handle {
+			background: red;
+		}
+		#GC .slider-selection {
+			background: #428041;
+		}
+		#GC .slider-handle {
+			background: green;
+		}
+		#BC .slider-selection {
+			background: #8283FF;
+		}
+		#BC .slider-handle {
+			border-bottom-color: blue;
+		}
+		#R, #G, #B {
+			width: 300px;
+		}
+    </style>
+	<script type="text/javascript" src="bower_components/modernizr/modernizr.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="jumbotron">
+        <h1>Slider for Bootstrap <small>bootstrap-slider.js</small></h1>
+        <p class="lead">Examples for the bootstrap-slider component.</p><p>
+      </p></div>
+
+      <div class="examples">
+      	<div class="slider-example">
+      		<h3>Example 1:</h3>
+      		<p>Basic example with custom formater and colored selected region via CSS.</p>
+      		<div class="well">
+				<input id="ex1" data-slider-id="ex1Slider" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="14">
+			</div>
+			<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/&gt
+
+
+
+###################
+    JavaScript	
+###################
+
+$('#ex1').slider({
+	formater: function(value) {
+		return 'Current value: ' + value;
+	}
+});
+
+
+
+###################
+       CSS	
+###################
+
+#ex1Slider .slider-selection {
+	background: #BABABA;
+}
+
+            </code></pre>
+      	</div>
+
+      	<div class="slider-example">
+      		<h3>Example 2:</h3>
+      		<p>Range selector, options specified via data attribute.</p>
+      		<div class="well">
+      			Filter by price interval: <b>€ 10</b> <input id="ex2" type="text" class="span2" value="" data-slider-min="10" data-slider-max="1000" data-slider-step="5" data-slider-value="[250,450]"> <b>€ 1000</b>
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+Filter by price interval: &ltb&gt€ 10&lt/b&gt &ltinput id="ex2" type="text" class="span2" value="" data-slider-min="10" data-slider-max="1000" data-slider-step="5" data-slider-value="[250,450]"/&gt &ltb&gt€ 1000&lt/b&gt
+
+
+###################
+    JavaScript	
+###################
+
+$("#ex2").slider({});
+
+            </code></pre>
+      	</div>
+
+      	<div class="slider-example">
+      		<h3>Example 3:</h3>
+      		<p>Using events to work with the values and style the selection and handles via CSS. The tooltip is disabled and diferent shapes for the handles.</p>
+      		<div class="well">
+      			<p>
+	        	<b>R</b> <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="128" data-slider-id="RC" id="R" data-slider-tooltip="hide" data-slider-handle="square">
+	            </p>
+	            <p>
+	            <b>G</b> <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="128" data-slider-id="GC" id="G" data-slider-tooltip="hide" data-slider-handle="round">
+	            </p>
+	            <p>
+	            <b>B</b> <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="128" data-slider-id="BC" id="B" data-slider-tooltip="hide" data-slider-handle="triangle">
+	            </p>
+	            <div id="RGB"></div>
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltp&gt
+&ltb&gtR&lt/b&gt &ltinput type="text" class="span2" value="" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="128" data-slider-id="RC" id="R" data-slider-tooltip="hide" data-slider-handle="square" /&gt
+&lt/p&gt
+&ltp&gt
+&ltb&gtG&lt/b&gt &ltinput type="text" class="span2" value="" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="128" data-slider-id="GC" id="G" data-slider-tooltip="hide" data-slider-handle="round" /&gt
+&lt/p&gt
+&ltp&gt
+&ltb&gtB&lt/b&gt &ltinput type="text" class="span2" value="" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="128" data-slider-id="BC" id="B" data-slider-tooltip="hide" data-slider-handle="triangle" /&gt
+&lt/p&gt
+&ltdiv id="RGB"&gt&lt/div&gt
+
+
+###################
+    JavaScript	
+###################
+
+var RGBChange = function() {
+	$('#RGB').css('background', 'rgb('+r.getValue()+','+g.getValue()+','+b.getValue()+')')
+};
+
+var r = $('#R').slider()
+		.on('slide', RGBChange)
+		.data('slider');
+var g = $('#G').slider()
+		.on('slide', RGBChange)
+		.data('slider');
+var b = $('#B').slider()
+		.on('slide', RGBChange)
+		.data('slider');
+
+
+###################
+       CSS	
+###################
+
+#RGB {
+	height: 20px;
+	background: rgb(128, 128, 128);
+}
+#RC .slider-selection {
+	background: #FF8282;
+}
+#RC .slider-handle {
+	background: red;
+}
+#GC .slider-selection {
+	background: #428041;
+}
+#GC .slider-handle {
+	background: green;
+}
+#BC .slider-selection {
+	background: #8283FF;
+}
+#BC .slider-handle {
+	border-bottom-color: blue;
+}
+#R, #G, #B {
+	width: 300px;
+}
+
+            </code></pre>
+      	</div>
+
+      	<div class="slider-example">
+      		<h3>Example 4:</h3>
+      		<p>Vertical Slider with reversed values (largest to smallest).</p>
+      		<div class="well">
+      			<input id="ex4" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="-3" data-slider-orientation="vertical">
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex4" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="-3" data-slider-orientation="vertical"/&gt
+
+
+###################
+    JavaScript	
+###################
+
+$("#ex4").slider({
+	reversed : true
+});
+
+            </code></pre>
+      	</div>
+
+      	<div class="slider-example">
+      		<h3>Example 5:</h3>
+      		<p>Destroy instance of slider by calling destroy() method on slider instance via JavaScript.
+      		<div class="well">
+      			<input id="ex5" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="0">
+      			<button id="destroyEx5Slider" class="btn btn-danger">Click to Destroy</button>
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex5" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="0"/&gt
+&ltbutton id="destroyEx5Slider" class='btn btn-danger'>Click to Destroy&lt/button&gt
+
+
+###################
+    JavaScript	
+###################
+
+$("#ex5").slider();
+$("#destroyEx5Slider").click(function() {
+	$("#ex5").slider('destroy');
+});
+
+            </code></pre>
+      	</p></div>
+
+      	<div class="slider-example">
+      		<h3>Example 6:</h3>
+      		<p>Able to bind to 'slide' JQuery event on slider, which is triggered whenever the slider is used.</p>
+      		<div class="well">
+      			<input id="ex6" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="3">
+      			<span id="ex6CurrentSliderValLabel">Current Slider Value: <span id="ex6SliderVal">3</span></span>
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex6" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="3"/&t
+&ltspan id="ex6CurrentSliderValLabel">Current Slider Value: &ltspan id="ex6SliderVal"&gt3&lt/span&gt&lt/span&gt
+
+
+###################
+    JavaScript	
+###################
+
+$("#ex6").slider();
+$("#ex6").on('slide', function(slideEvt) {
+	$("#ex6SliderVal").text(slideEvt.value);
+});
+
+            </code></pre>
+      	</div>
+
+      	<div class="slider-example">
+      		<h3>Example 7:</h3>
+      		<p>Sliders can be enabled and disabled.</p>
+      		<div class="well">
+      			<input id="ex7" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="5" data-slider-enabled="false">
+      			<input id="ex7-enabled" type="checkbox"> Enabled
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex7" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="5" data-slider-enabled="false"/&gt
+&ltinput id="ex7-enabled" type="checkbox"/&gt Enabled
+
+
+###################
+    JavaScript	
+###################
+
+$("#ex7").slider();
+$("#ex7-enabled").click(function() {
+	if(this.checked) {
+		$("#ex7").slider("enable");
+	}
+	else {
+		$("#ex7").slider("disable");
+	}
+});
+
+            </code></pre>
+      	</div>
+
+      <div class="slider-example">
+      		<h3>Example 8:</h3>
+      		<p>Tooltip can always be displayed.</p>
+      		<div class="well">
+  				<input id="ex8" data-slider-id="ex1Slider" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14">
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex8" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/&gt
+
+
+###################
+    JavaScript	
+###################
+
+$("#ex8").slider({
+	tooltip: 'always'
+});
+
+            </code></pre>
+      	</div>
+
+      <div class="slider-example">
+      		<h3>Example 9:</h3>
+      		<p>Precision (number of places after the decimal) can be specified.</p>
+      		<div class="well">
+  				<input id="ex9" type="text">
+      		</div>
+      		<pre><code>
+###################
+       HTML	
+###################
+
+&ltinput id="ex9" type="text"/&gt
+
+###################
+    JavaScript	
+###################
+
+$("#ex9").slider({
+	precision: 2,
+	value: 8.115 // Slider will instantiate showing 8.12 due to specified precision
+});
+
+
+            </code></pre>
+      	</div>
+      
+      </div> <!-- /examples -->
+    </div> <!-- /container -->
+
+
+    <!-- core JavaScript
+    ================================================== -->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-slider.js"></script>
+    <script type="text/javascript">
+    	$(document).ready(function() {
+    		/* Example 1 */
+	    	$('#ex1').slider({
+	          	formater: function(value) {
+	            	return 'Current value: ' + value;
+	          	}
+	        });
+
+	    	/* Example 2 */
+	        $("#ex2").slider({});
+
+	        /* Example 3 */
+	        var RGBChange = function() {
+	          $('#RGB').css('background', 'rgb('+r.getValue()+','+g.getValue()+','+b.getValue()+')')
+	        };
+
+	        var r = $('#R').slider()
+	                	.on('slide', RGBChange)
+	                	.data('slider');
+	        var g = $('#G').slider()
+	                	.on('slide', RGBChange)
+	                	.data('slider');
+	        var b = $('#B').slider()
+	                	.on('slide', RGBChange)
+	                	.data('slider');
+
+	        /* Example 4 */
+	        $("#ex4").slider({
+	        	reversed : true
+	        });
+
+	        /* Example 5 */
+	        $("#ex5").slider();
+			$("#destroyEx5Slider").click(function() {
+				$("#ex5").slider('destroy');
+			});
+
+			/* Example 6 */
+			$("#ex6").slider();
+			$("#ex6").on('slide', function(slideEvt) {
+				$("#ex6SliderVal").text(slideEvt.value);
+			});
+
+			/* Example 7 */
+			$("#ex7").slider();
+			$("#ex7-enabled").click(function() {
+				if(this.checked) {
+					$("#ex7").slider("enable");
+				}
+				else {
+					$("#ex7").slider("disable");
+				}
+			});
+
+			/* Example 8 */
+			$("#ex8").slider({
+				tooltip: 'always'
+			});
+
+			/* Example 9 */
+			$("#ex9").slider({
+				step: 0.01,
+				value: 8.115
+			});
+    	});
+    </script>
+    <!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Slider for Bootstrap bootstrap-slider.js</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.1.</span> <span class="nav-text">Example 1:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.2.</span> <span class="nav-text">Example 2:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.3.</span> <span class="nav-text">Example 3:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.4.</span> <span class="nav-text">Example 4:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.5.</span> <span class="nav-text">Example 5:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.6.</span> <span class="nav-text">Example 6:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.7.</span> <span class="nav-text">Example 7:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.8.</span> <span class="nav-text">Example 8:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.9.</span> <span class="nav-text">Example 9:</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/raftscope/bootstrap-slider/index.html';
+          this.page.identifier = 'raftscope/bootstrap-slider/index.html';
+          this.page.title = '';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

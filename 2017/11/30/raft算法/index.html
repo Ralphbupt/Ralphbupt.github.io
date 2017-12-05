@@ -1,0 +1,895 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="raft," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="raft 一致性算法（论文总结）CAP 定理 Consistency(一致性)： 数据一致更新，所有数据变动都是同步的 Availability(可用性)： 好的响应性能 Network partitioning(分区容错性)： 可靠性（当发生了分区的情况下，必须要在 C 和 A 之间做出选择）  根据定理，分布式系统只能满足三项中的两项而不可能满足全部三项[4]。理解CAP理论的最简单方式是想象">
+<meta name="keywords" content="raft">
+<meta property="og:type" content="article">
+<meta property="og:title" content="raft算法">
+<meta property="og:url" content="http://ralphbupt.github.io/2017/11/30/raft算法/index.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="raft 一致性算法（论文总结）CAP 定理 Consistency(一致性)： 数据一致更新，所有数据变动都是同步的 Availability(可用性)： 好的响应性能 Network partitioning(分区容错性)： 可靠性（当发生了分区的情况下，必须要在 C 和 A 之间做出选择）  根据定理，分布式系统只能满足三项中的两项而不可能满足全部三项[4]。理解CAP理论的最简单方式是想象">
+<meta property="og:image" content="http://ralphbupt.github.io/2017/11/30/raft算法/img/state_machine.png">
+<meta property="og:image" content="http://ralphbupt.github.io/img/raft_server_state.jpg">
+<meta property="og:image" content="http://ralphbupt.github.io/img/rafttrem.jpg">
+<meta property="og:updated_time" content="2017-12-05T06:59:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="raft算法">
+<meta name="twitter:description" content="raft 一致性算法（论文总结）CAP 定理 Consistency(一致性)： 数据一致更新，所有数据变动都是同步的 Availability(可用性)： 好的响应性能 Network partitioning(分区容错性)： 可靠性（当发生了分区的情况下，必须要在 C 和 A 之间做出选择）  根据定理，分布式系统只能满足三项中的两项而不可能满足全部三项[4]。理解CAP理论的最简单方式是想象">
+<meta name="twitter:image" content="http://ralphbupt.github.io/2017/11/30/raft算法/img/state_machine.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/2017/11/30/raft算法/"/>
+
+
+
+
+
+  <title>raft算法 | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/11/30/raft算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SleepyJimmy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/wmm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ralph's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">raft算法</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-30T14:48:26+08:00">
+                2017-11-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/30/raft算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/30/raft算法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="raft-一致性算法（论文总结）"><a href="#raft-一致性算法（论文总结）" class="headerlink" title="raft 一致性算法（论文总结）"></a>raft 一致性算法（论文总结）</h1><h3 id="CAP-定理"><a href="#CAP-定理" class="headerlink" title="CAP 定理"></a>CAP 定理</h3><ul>
+<li>Consistency(一致性)： 数据一致更新，所有数据变动都是同步的</li>
+<li>Availability(可用性)： 好的响应性能</li>
+<li>Network partitioning(分区容错性)： 可靠性（当发生了分区的情况下，必须要在 C 和 A 之间做出选择）</li>
+</ul>
+<p>根据定理，分布式系统只能满足三项中的两项而不可能满足全部三项[4]。理解CAP理论的最简单方式是想象两个节点分处分区两侧。允许至少一个节点更新状态会导致数据不一致，即丧失了C性质。如果为了保证数据一致性，将分区一侧的节点设置为不可用，那么又丧失了A性质。除非两个节点可以互相通信，才能既保证C又保证A，这又会导致丧失P性质。</p>
+<p>对于一致性算法，一致性通常分为 三个级别 强一致性、弱一致性、最终一致性。 raft 算法是一种强一致性算法</p>
+<h3 id="raft-的新特性"><a href="#raft-的新特性" class="headerlink" title="raft 的新特性"></a>raft 的新特性</h3><p>Raft 和现有的一些一致性算法相似，但是它有一些新的特性</p>
+<ul>
+<li>Strong leader: raft 和其他一致性算法相比， 采用了一种更强力的领导策略。 比如， 日志条目只允许从领导到服务器。 这样简化了对于重复日志的管理，并让 raft 更加容易理解。</li>
+<li>Leader election:  raft 采用随机定时器来选举领导。 这样只需要在心跳中加入少量的随机策略，就能简单迅速的解决冲突问题</li>
+<li>Membership changes:: raft 在调整聚群成员的时候采用了一种联合一致性（ joint consensus）的机制。这样当配置改变的时候，集群可以继续运行</li>
+</ul>
+<h3 id="复制状态机（Replicated-State-Machine）"><a href="#复制状态机（Replicated-State-Machine）" class="headerlink" title="复制状态机（Replicated State Machine）"></a>复制状态机（Replicated State Machine）</h3><p>一致性算法是在复制状态机的背景中被提出来的。指的是在一组服务器中产生同样状态的副本，因此即使一些机器发生故障之后仍然能正常工作。复制状态机被用于解决分布式系统中的容错处理。zookeeper 中就使用了复制状态机。</p>
+<p><img src="img/state_machine.png" alt="State Machine"></p>
+<p>复制状态机是通过复制日志来实现的。每一台服务器保存着一份日志，日志中包含一系列的命令，状态机会按顺序执行这些命令。因为每一台计算机的状态机都是确定的，所以每个状态机的状态都是相同的，执行的命令是相同的，最后的执行结果也就是一样的了。如何保证复制日志的一致就是一致性算法的工作内容。</p>
+<p>通常强况下，一致性算法有以下特性</p>
+<ul>
+<li>确保安全性（从来不会返回错误的结果）在所有的非拜占庭问题的条件下，包括网络延迟、分区、丢包、乱序等情况</li>
+<li>可用性 只要集群中大多数节点能够彼此通信，也能喝客户端保持通信、</li>
+<li>不依赖定时去确保日志的一致性</li>
+<li>通常情况下，只要集群中大多数节点对一轮 RPC 调用做出了相应，一条命令即可被视为已经完成。集群中少部分慢的节点不会影响整个系统的性能。</li>
+</ul>
+<h3 id="传统-Paxos-算法的缺点"><a href="#传统-Paxos-算法的缺点" class="headerlink" title="传统 Paxos 算法的缺点"></a>传统 Paxos 算法的缺点</h3><ul>
+<li>Paxos 算法理解起来很困难</li>
+<li>并不能很好的解决实际问题</li>
+<li>工程中实现起来也很麻烦</li>
+</ul>
+<h3 id="raft-设计目标"><a href="#raft-设计目标" class="headerlink" title="raft 设计目标"></a>raft 设计目标</h3><ul>
+<li>提供一个完整的、实际的基础用于系统构建，这样能显著的减少开发量</li>
+<li>在所有情况下必须安全， 在典型的情况下保证可用性</li>
+<li>最重要的是容易理解</li>
+</ul>
+<h2 id="Raft-算法"><a href="#Raft-算法" class="headerlink" title="Raft 算法"></a>Raft 算法</h2><p>Raft 实现一致性靠的是首先先选举一个 Leader，然后 Leader 全权负责复制日志(replicated log).<br>Leader 从客户端接受日志条目， 将它们复制到其他服务器，然后告诉服务器什么时候可以将日志条目应用到它的状态机中。 有一个 Leader 简化了复制日志的管理过程， 如果Leader 宕机或者和其他服务器失去了联系，则会选出一个新的 Leader 。</p>
+<p>Raft 将一致性问题分解成相对独立的三个子问题</p>
+<ul>
+<li>Leader election (Leader 选举): 当集训中一个 Leader 宕机之后必须选出一个新的 Leader </li>
+<li>Log replication (日志复制): leader 必须从客户端获取日志条目，并将其在集群中复制，强制其他日志和它的日志同步</li>
+<li>Safety: 如果任何服务器将一条特定的日志条目应用到了自己的状态机中，其他服务器不能在相同的索引位置应用不同的条目。</li>
+</ul>
+<h3 id="raft-基础"><a href="#raft-基础" class="headerlink" title="raft 基础"></a>raft 基础</h3><p>一个 Raft 集群包含很多服务器节点， 5 是一个典型的数量，允许两个节点宕机。在任意的时候，每一台服务器节点属于以下三个状态中的一个。 Leader、follower、candidate。 正常情况下集群中有一个 leader、其他的节点全是 follower 。 follower 是被动的，不会处理任何请求，仅仅响应从 leader 和 candidates 的请求， leader 处理所有客户端的请求。 candidate 是在参与选举中的节点。<br><img src="/img/raft_server_state.jpg" alt="raft server state"></p>
+<h3 id="raft-任期"><a href="#raft-任期" class="headerlink" title="raft 任期"></a>raft 任期</h3><p><img src="/img/rafttrem.jpg" alt="raft 任期"></p>
+<p>raft 将时间分成任意长度的任期， 用连续的数字表示。 每一个任期都从一次选举开始，如果一个参与者赢得本次选举，那么在这次任期接下来的时间就作为集群的 Leader， 并负责管理这个集群。如果一次选举失败的情况下， 马上回开始另一轮选举， raft 保证了在灭一个任期内至少有一个 leader。</p>
+<p>任期在 raft 算法中被视为逻辑时钟，允许服务器检测过期的信息如失效的 leader 等。 每一个服务器节点都存放了当前的任期号码，任期号码随着时间单调递增。服务器之间通信时回交换当前的任期号码。</p>
+<p>如果一个节点的任期号比另一台服务器任期号小，它将立即更新自己的任期号。 如果一个 candidate 或者 leader 发现自己的任期过期，那么它会马上转变为 follower 状态，如果一台服务节点收到了一个过期的请求，它将拒绝该请求。</p>
+<h3 id="raft-RPC"><a href="#raft-RPC" class="headerlink" title="raft RPC"></a>raft RPC</h3><p>Raft 服务节点之间采用 RPC 调用， 通常的一致性算法只需要两种类型的 RPC 。 在集群选举的时候 candidate 触发 RequestVote RPCs，Leader 触发 AppendEntries RPC。raft 添加了在节点之间传输快照的 RPC。 如果服务节点没收到 RPC 的响应，会自动的重试。为了提升性能，这些 RPC 并发的被调用。</p>
+<ul>
+<li>RequestVote RPCs</li>
+<li>AppendEntries RPCs</li>
+<li>Snapshot RPCs</li>
+</ul>
+<h3 id="Leader-election"><a href="#Leader-election" class="headerlink" title="Leader election"></a>Leader election</h3><p>raft 采用心跳的机制来出发 leader 选举。 </p>
+<ul>
+<li>当服务节点启动时，先作为一个 follower。 </li>
+<li>如果一台服务只要能收到从 leader 或者 candidate 的 RPC 请求， 则该台服务器保持 follower 状态。</li>
+<li>leader 周期性的发送心跳到所有的 follower 以保证其权威</li>
+<li>follower 在一个周期内没收到通信请求叫做 election timeout，它假定没有可以到达的 leader。开始一轮选举， follower 增加自己的任期号码，将自己转变为 candidate 状态。</li>
+<li>follower 为自己投一票并且并发的向集群中其他节点发起一个 RequestVote RPC 请求</li>
+<li>candidate 在以下三种情况下会变成其他状态<ul>
+<li>赢得本轮选举变为 leader</li>
+<li>另外一台服务器节点成为了 leader</li>
+<li>一个竞选周期结束之后没有选出 leader</li>
+</ul>
+</li>
+<li>一个 candidate 如果在一个任期内赢得了整个集群中大多数节点的选票，就赢得了本次选举</li>
+<li>在一轮选举中，每一台服务节点最多只会投一票（因此一轮选举最多选出一个 leader）</li>
+<li><p>一旦一个节点赢得选举，自己变成 leader 状态， 并向其他节点发送心跳去建立自己的权威来阻止新的选举</p>
+</li>
+<li><p>candidate 在等待选票的时候，如果收到 其他声称自己时 leader A 节点的 AppendEntries RPC请求时</p>
+<ul>
+<li>如果收到 A 的 AppendEntries 的任期号码大于或等于自己的任期号码， 那么它会承认 A 的合法性， 并将自己转化 follower 状态</li>
+<li>如果 A 的任期号比自己小， candidate 拒绝这次 RPC 调用并继续返回自己的选举</li>
+</ul>
+</li>
+<li><p>如果多个 follower 同时变成了 candidate， 选票将会被多个 candidate 分享，这样可能没有一个 candidate 获得大多数的选票， 所有的 candidate 都会增加自己的任期，并开始下一轮选举。如果不采取额外措施，这种情况可能一致持续下去</p>
+</li>
+<li>Raft 采用随机的选举超时来确保分票这种情况很少发生，而且即使出现了也能快速被解决。</li>
+</ul>
+<h3 id="log-replication"><a href="#log-replication" class="headerlink" title="log replication"></a>log replication</h3><iframe src="/raftscope/index.html" width="[2400]" height="[800]" frameborder="0" allowfullscreen></iframe>
+<p>一旦 leader 被选了出来，就开始响应客户端的请求。 每一条客户端的请求都包含一条需要被复制状态机执行的命令。</p>
+<ul>
+<li>leader 接收客户端请求</li>
+<li>leader 将命令作为一个日志条目加到它的日志中去</li>
+<li>leader 并发的向其他节点发出  AppendEntries RPCs 请求</li>
+<li>当条目被安全的复制（）之后，leader 将条目添加到状态机中， 并向客户端返回结果</li>
+</ul>
+<p>如果 follower 崩溃或者运行的很慢、或者发生了丢包， leader 不停的向 follower 发送AppendEntries RPC， 直到所有的 follower 存储了所有的  AppendEntries。</p>
+<ul>
+<li>每一个日志条目都有一个整数索引标记自己在日志中的位置</li>
+<li>leader 决定什么时候可以安全的将 log 应用到状态机中 ， 这样的 日志条目被称为 提交的日志条目</li>
+<li>Raft 确保了提交的日志条目是持久化的并且最终将会被所有可用的状态己执行。</li>
+<li>一旦创建的日志条目的 leader 收到了集群中的大多数节点的确认时，该条日志条目就变成了已提交</li>
+<li>在设计 Raft 的日志机制的时候，除了简化系统的行为和让其变的可预测之外，也是确保安全性中的一个很重要的组建。 Raft 维持了以下两种特性<ul>
+<li>如果不同日志中的两个日志条目有相同的索引和任期，那么它们存储了相同的命令</li>
+<li>如果不同日志中的两个日志条目有相同的任期和索引，那么值钱的日志是相同的</li>
+</ul>
+</li>
+</ul>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
+<li><p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="external">https://en.wikipedia.org/wiki/CAP_theorem</a></p>
+</li>
+<li><p><a href="https://raft.github.io/raft.pdf" target="_blank" rel="external">https://raft.github.io/raft.pdf</a></p>
+</li>
+<li><p><a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="external">https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>如果你觉得本文对你有帮助，欢迎打赏！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/img/weixin.JPG" alt="SleepyJimmy WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/img/zhifubao.JPG" alt="SleepyJimmy Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/raft/" rel="tag"># raft</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/27/etcd学习笔记/" rel="prev" title="etcd学习笔记（etcdv3， gRPC服务发现和负载均衡）">
+                etcd学习笔记（etcdv3， gRPC服务发现和负载均衡） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#raft-一致性算法（论文总结）"><span class="nav-number">1.</span> <span class="nav-text">raft 一致性算法（论文总结）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAP-定理"><span class="nav-number">1.0.1.</span> <span class="nav-text">CAP 定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#raft-的新特性"><span class="nav-number">1.0.2.</span> <span class="nav-text">raft 的新特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复制状态机（Replicated-State-Machine）"><span class="nav-number">1.0.3.</span> <span class="nav-text">复制状态机（Replicated State Machine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传统-Paxos-算法的缺点"><span class="nav-number">1.0.4.</span> <span class="nav-text">传统 Paxos 算法的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#raft-设计目标"><span class="nav-number">1.0.5.</span> <span class="nav-text">raft 设计目标</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Raft-算法"><span class="nav-number">1.1.</span> <span class="nav-text">Raft 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#raft-基础"><span class="nav-number">1.1.1.</span> <span class="nav-text">raft 基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#raft-任期"><span class="nav-number">1.1.2.</span> <span class="nav-text">raft 任期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#raft-RPC"><span class="nav-number">1.1.3.</span> <span class="nav-text">raft RPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Leader-election"><span class="nav-number">1.1.4.</span> <span class="nav-text">Leader election</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#log-replication"><span class="nav-number">1.1.5.</span> <span class="nav-text">log replication</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文档"><span class="nav-number">2.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/2017/11/30/raft算法/';
+          this.page.identifier = '2017/11/30/raft算法/';
+          this.page.title = 'raft算法';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

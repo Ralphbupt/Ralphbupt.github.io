@@ -1,0 +1,845 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="bootstrap-slider A “fork” of bootstrap-slider found on http://www.eyecon.ro/ originally by Stefan Petre. Want to use this with Rails? Check it out! InstallationClone the repository, then run npm insta">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ralph's Blog">
+<meta property="og:url" content="http://ralphbupt.github.io/raftscope/bootstrap-slider/README.html">
+<meta property="og:site_name" content="Ralph's Blog">
+<meta property="og:description" content="bootstrap-slider A “fork” of bootstrap-slider found on http://www.eyecon.ro/ originally by Stefan Petre. Want to use this with Rails? Check it out! InstallationClone the repository, then run npm insta">
+<meta property="og:image" content="https://travis-ci.org/seiyria/bootstrap-slider.png?branch=master">
+<meta property="og:updated_time" content="2017-12-02T09:17:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ralph's Blog">
+<meta name="twitter:description" content="bootstrap-slider A “fork” of bootstrap-slider found on http://www.eyecon.ro/ originally by Stefan Petre. Want to use this with Rails? Check it out! InstallationClone the repository, then run npm insta">
+<meta name="twitter:image" content="https://travis-ci.org/seiyria/bootstrap-slider.png?branch=master">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ralphbupt.github.io/raftscope/bootstrap-slider/README.html"/>
+
+
+
+
+
+  <title> | Ralph's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-96545027-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ralph's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+  <header class="post-header">
+
+	<h2 class="post-title" itemprop="name headline"></h2>
+
+
+
+</header>
+
+    
+    
+      <h1 id="bootstrap-slider"><a href="#bootstrap-slider" class="headerlink" title="bootstrap-slider "></a>bootstrap-slider <a href="https://travis-ci.org/seiyria/bootstrap-slider" target="_blank" rel="external"><img src="https://travis-ci.org/seiyria/bootstrap-slider.png?branch=master" alt="Build Status"></a></h1><p>A “fork” of bootstrap-slider found on <a href="http://www.eyecon.ro/" target="_blank" rel="external">http://www.eyecon.ro/</a> originally by Stefan Petre.</p>
+<p>Want to use this with Rails? <a href="https://github.com/stationkeeping/bootstrap-slider-rails" target="_blank" rel="external">Check it out!</a></p>
+<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>Clone the repository, then run <code>npm install</code></p>
+<p>Want to use bower? <code>bower install seiyria-bootstrap-slider</code></p>
+<h1 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h1><p>You can see all of our API examples <a href="http://seiyria.github.io/bootstrap-slider/" target="_blank" rel="external">here</a>.</p>
+<h1 id="Using-bootstrap-slider"><a href="#Using-bootstrap-slider" class="headerlink" title="Using bootstrap-slider"></a>Using bootstrap-slider</h1><p>Create an input element and call .slider() on it:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$(<span class="string">"input.slider"</span>).slider();</div></pre></td></tr></table></figure>
+<h1 id="Options"><a href="#Options" class="headerlink" title="Options"></a>Options</h1><p>Options can be passed either as a data (data-slider-foo) attribute, or as part of an object in the slider call. The only exception here is the formater argument - that can not be passed as a data- attribute.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td style="text-align:center">string</td>
+<td style="text-align:center">‘’</td>
+<td style="text-align:left">set the id of the slider element when it’s created</td>
+</tr>
+<tr>
+<td>min</td>
+<td style="text-align:center">float</td>
+<td style="text-align:center">0</td>
+<td style="text-align:left">minimum possible value</td>
+</tr>
+<tr>
+<td>max</td>
+<td style="text-align:center">float</td>
+<td style="text-align:center">10</td>
+<td style="text-align:left">maximum possible value</td>
+</tr>
+<tr>
+<td>step</td>
+<td style="text-align:center">float</td>
+<td style="text-align:center">1</td>
+<td style="text-align:left">increment step</td>
+</tr>
+<tr>
+<td>precision</td>
+<td style="text-align:center">float</td>
+<td style="text-align:center">0</td>
+<td style="text-align:left">The number of digits shown after the decimal. Defaults to the number of digits after the decimal of <em>step</em> value.</td>
+</tr>
+<tr>
+<td>orientation</td>
+<td style="text-align:center">string</td>
+<td style="text-align:center">‘horizontal’</td>
+<td style="text-align:left">set the orientation. Accepts ‘vertical’ or ‘horizontal’</td>
+</tr>
+<tr>
+<td>value</td>
+<td style="text-align:center">float,array</td>
+<td style="text-align:center">5</td>
+<td style="text-align:left">initial value. Use array to have a range slider.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:center">bool</td>
+<td style="text-align:center">false</td>
+<td style="text-align:left">make range slider. Optional if initial value is an array. If initial value is scalar, max will be used for second value.</td>
+</tr>
+<tr>
+<td>selection</td>
+<td style="text-align:center">string</td>
+<td style="text-align:center">‘before’</td>
+<td style="text-align:left">selection placement. Accepts: ‘before’, ‘after’ or ‘none’. In case of a range slider, the selection will be placed between the handles</td>
+</tr>
+<tr>
+<td>tooltip</td>
+<td style="text-align:center">string</td>
+<td style="text-align:center">‘show’</td>
+<td style="text-align:left">whether to show the tooltip on drag, hide the tooltip, or always show the tooltip. Accepts: ‘show’, ‘hide’, or ‘always’</td>
+</tr>
+<tr>
+<td>tooltip_separator</td>
+<td style="text-align:center">string</td>
+<td style="text-align:center">‘:’</td>
+<td style="text-align:left">tooltip separator</td>
+</tr>
+<tr>
+<td>tooltip_split</td>
+<td style="text-align:center">bool</td>
+<td style="text-align:center">false</td>
+<td style="text-align:left">if false show one tootip if true show two tooltips one for each handler</td>
+</tr>
+<tr>
+<td>handle</td>
+<td style="text-align:center">string</td>
+<td style="text-align:center">‘round’</td>
+<td style="text-align:left">handle shape. Accepts: ‘round’, ‘square’ or ‘triangle’</td>
+</tr>
+<tr>
+<td>reversed</td>
+<td style="text-align:center">bool</td>
+<td style="text-align:center">false</td>
+<td style="text-align:left">whether or not the slider should be reversed</td>
+</tr>
+<tr>
+<td>enabled</td>
+<td style="text-align:center">bool</td>
+<td style="text-align:center">true</td>
+<td style="text-align:left">whether or not the slider is initially enabled</td>
+</tr>
+<tr>
+<td>formater</td>
+<td style="text-align:center">function</td>
+<td style="text-align:center">returns the plain value</td>
+<td style="text-align:left">formatter callback. Return the value wanted to be displayed in the tooltip</td>
+</tr>
+<tr>
+<td>natural_arrow_keys</td>
+<td style="text-align:center">bool</td>
+<td style="text-align:center">false</td>
+<td style="text-align:left">The natural order is used for the arrow keys. Arrow up select the upper slider value for vertical sliders, arrow right the righter slider value for a horizontal slider - no matter if the slider was reversed or not. By default the arrow keys are oriented by arrow up/right to the higher slider value, arrow down/left to the lower slider value.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="Functions"><a href="#Functions" class="headerlink" title="Functions"></a>Functions</h1><table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.slider(options)</td>
+<td>Initializes the slider</td>
+</tr>
+<tr>
+<td>.slider(‘getValue’)</td>
+<td>Get the current value from the slider</td>
+</tr>
+<tr>
+<td>.slider(‘setValue’, newValue, [triggerSlideEvent])</td>
+<td>Set a new value for the slider. If optional triggerSlideEvent parameter is <em>true</em>, the ‘slide’ event will be triggered.</td>
+</tr>
+<tr>
+<td>.slider(‘destroy’)</td>
+<td>Properly clean up and remove the slider instance</td>
+</tr>
+<tr>
+<td>.slider(‘disable’)</td>
+<td>Disables the slider and prevents the user from changing the value</td>
+</tr>
+<tr>
+<td>.slider(‘enable’)</td>
+<td>Enables the slider</td>
+</tr>
+<tr>
+<td>.slider(‘toggle’)</td>
+<td>Toggles the slider between enabled and disabled</td>
+</tr>
+<tr>
+<td>.slider(‘isEnabled’)</td>
+<td>Returns true if enabled, false if disabled</td>
+</tr>
+<tr>
+<td>.slider(‘setAttribute’, [attribute], [value])</td>
+<td>Updates the slider’s <a href="#options">attributes</a></td>
+</tr>
+<tr>
+<td>.slider(‘getAttribute’, [attribute])</td>
+<td>Get the slider’s <a href="#options">attributes</a></td>
+</tr>
+<tr>
+<td>.slider(‘refresh’)</td>
+<td>Refreshes the current slider</td>
+</tr>
+</tbody>
+</table>
+<h1 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h1><table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>slideStart</td>
+<td>This event fires when dragging starts</td>
+</tr>
+<tr>
+<td>slide</td>
+<td>This event fires when the slider is dragged</td>
+</tr>
+<tr>
+<td>slideStop</td>
+<td>This event fires when the dragging stops</td>
+</tr>
+<tr>
+<td>slideEnabled</td>
+<td>This event fires when the slider is enabled</td>
+</tr>
+<tr>
+<td>slideDisabled</td>
+<td>This event fires when the slider is disabled</td>
+</tr>
+</tbody>
+</table>
+<h1 id="Maintainers"><a href="#Maintainers" class="headerlink" title="Maintainers"></a>Maintainers</h1><ul>
+<li>Kyle Kemp<ul>
+<li>Twitter: <a href="https://twitter.com/seiyria" target="_blank" rel="external">@seiyria</a></li>
+<li>Github: <a href="https://github.com/seiyria" target="_blank" rel="external">seiyria</a></li>
+</ul>
+</li>
+<li>Rohit Kalkur<ul>
+<li>Twitter: <a href="https://twitter.com/Rovolutionary" target="_blank" rel="external">@Rovolutionary</a></li>
+<li>Github: <a href="https://github.com/rovolution" target="_blank" rel="external">rovolution</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/wmm.jpg"
+               alt="SleepyJimmy" />
+          <p class="site-author-name" itemprop="name">SleepyJimmy</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Ralphbupt" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.instagram.com/icephonix1900/" target="_blank" title="instagram">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  instagram
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2356290725/profile" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#bootstrap-slider"><span class="nav-number">1.</span> <span class="nav-text">bootstrap-slider </span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Installation"><span class="nav-number">2.</span> <span class="nav-text">Installation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Examples"><span class="nav-number">3.</span> <span class="nav-text">Examples</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-bootstrap-slider"><span class="nav-number">4.</span> <span class="nav-text">Using bootstrap-slider</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Options"><span class="nav-number">5.</span> <span class="nav-text">Options</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Functions"><span class="nav-number">6.</span> <span class="nav-text">Functions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Events"><span class="nav-number">7.</span> <span class="nav-text">Events</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Maintainers"><span class="nav-number">8.</span> <span class="nav-text">Maintainers</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ralph</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://pengcheng199.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://ralphbupt.github.io/raftscope/bootstrap-slider/README.html';
+          this.page.identifier = 'raftscope/bootstrap-slider/README.html';
+          this.page.title = '';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pengcheng199.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
