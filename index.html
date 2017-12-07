@@ -420,8 +420,7 @@
 </li>
 <li>Raft 采用随机的选举超时来确保分票这种情况很少发生，而且即使出现了也能快速被解决。</li>
 </ul>
-<h3 id="log-replication"><a href="#log-replication" class="headerlink" title="log replication"></a>log replication</h3><iframe src="/raftscope/index.html" width="[2400]" height="[800]" frameborder="0" allowfullscreen></iframe>
-<p>一旦 leader 被选了出来，就开始响应客户端的请求。 每一条客户端的请求都包含一条需要被复制状态机执行的命令。</p>
+<h3 id="log-replication"><a href="#log-replication" class="headerlink" title="log replication"></a>log replication</h3><p>一旦 leader 被选了出来，就开始响应客户端的请求。 每一条客户端的请求都包含一条需要被复制状态机执行的命令。</p>
 <ul>
 <li>leader 接收客户端请求</li>
 <li>leader 将命令作为一个日志条目加到它的日志中去</li>
@@ -436,11 +435,9 @@
 <li>一旦创建的日志条目的 leader 收到了集群中的大多数节点的确认时，该条日志条目就变成了已提交</li>
 <li>在设计 Raft 的日志机制的时候，除了简化系统的行为和让其变的可预测之外，也是确保安全性中的一个很重要的组建。 Raft 维持了以下两种特性<ul>
 <li>如果不同日志中的两个日志条目有相同的索引和任期，那么它们存储了相同的命令</li>
-<li>如果不同日志中的两个日志条目有相同的任期和索引，那么值钱的日志是相同的</li>
+<li>如果不同日志中的两个日志条目有相同的任期和索引，那么值钱的日志是相同的<br>、<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1></li>
 </ul>
 </li>
-</ul>
-<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
 <li><p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="external">https://en.wikipedia.org/wiki/CAP_theorem</a></p>
 </li>
 <li><p><a href="https://raft.github.io/raft.pdf" target="_blank" rel="external">https://raft.github.io/raft.pdf</a></p>
@@ -1125,7 +1122,6 @@ Base 32    0    1    2    3    4    5    6    7    8    9    b    c    d    e   
 Decimal    16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31
 Base 32    h    j    k    m    n    p    q    r    s    t    u    v    w    x    y    z
 </code></pre><p>如上表所示，将26个字母去掉 a、 i、 l、 o 自个字母再加上 0～9 一共 32个字符，刚好能代表 5 bit 的数据 (2^5 = 32). 对于我们得到的 56 位二进制串，我们能最高编码11 位的 hashstr  4pruydqqvj</p>
-<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>在上面的特点中我们讲到了geohash 的前缀相同的越多，两者的距离越接近。在 LBS 应用中，经常需要用到计算附近的人，<br>比如要求</p>
 <p><a href="https://github.com/Ralphbupt/geohash" target="_blank" rel="external">geohash 的 go 实现</a></p>
 
           

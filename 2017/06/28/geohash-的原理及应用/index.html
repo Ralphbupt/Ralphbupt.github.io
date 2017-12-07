@@ -100,7 +100,7 @@
 <meta property="og:url" content="http://ralphbupt.github.io/2017/06/28/geohash-的原理及应用/index.html">
 <meta property="og:site_name" content="Ralph's Blog">
 <meta property="og:description" content="geohash 是 Gustavo Niemeyer发明的一种对地理位置进行编码的算法， 是一种分层的空间数据结构，核心原理是将分成网格状的区域。并将一个区域编码成一定长度的字符串。 例如 将坐标 (57.64911, 10.40744)（lat, lon） 编码成11 位的 geohash 得到了4pruydqqvj。 geohash 的特点 纬度和经度是二维的数据，建索引的时候需要对纬度和经">
-<meta property="og:updated_time" content="2017-06-28T16:35:37.000Z">
+<meta property="og:updated_time" content="2017-12-07T09:36:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="geohash 的原理及应用">
 <meta name="twitter:description" content="geohash 是 Gustavo Niemeyer发明的一种对地理位置进行编码的算法， 是一种分层的空间数据结构，核心原理是将分成网格状的区域。并将一个区域编码成一定长度的字符串。 例如 将坐标 (57.64911, 10.40744)（lat, lon） 编码成11 位的 geohash 得到了4pruydqqvj。 geohash 的特点 纬度和经度是二维的数据，建索引的时候需要对纬度和经">
@@ -411,7 +411,6 @@ Base 32    0    1    2    3    4    5    6    7    8    9    b    c    d    e   
 Decimal    16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31
 Base 32    h    j    k    m    n    p    q    r    s    t    u    v    w    x    y    z
 </code></pre><p>如上表所示，将26个字母去掉 a、 i、 l、 o 自个字母再加上 0～9 一共 32个字符，刚好能代表 5 bit 的数据 (2^5 = 32). 对于我们得到的 56 位二进制串，我们能最高编码11 位的 hashstr  4pruydqqvj</p>
-<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>在上面的特点中我们讲到了geohash 的前缀相同的越多，两者的距离越接近。在 LBS 应用中，经常需要用到计算附近的人，<br>比如要求</p>
 <p><a href="https://github.com/Ralphbupt/geohash" target="_blank" rel="external">geohash 的 go 实现</a></p>
 
       
@@ -638,7 +637,7 @@ Base 32    h    j    k    m    n    p    q    r    s    t    u    v    w    x   
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#geohash-的特点"><span class="nav-number">1.</span> <span class="nav-text">geohash 的特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码"><span class="nav-number">2.</span> <span class="nav-text">编码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">2.2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码-1"><span class="nav-number">2.3.</span> <span class="nav-text">编码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用"><span class="nav-number">3.</span> <span class="nav-text">应用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#geohash-的特点"><span class="nav-number">1.</span> <span class="nav-text">geohash 的特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码"><span class="nav-number">2.</span> <span class="nav-text">编码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">2.2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码-1"><span class="nav-number">2.3.</span> <span class="nav-text">编码</span></a></li></ol></li></ol></div>
             
 
           </div>
