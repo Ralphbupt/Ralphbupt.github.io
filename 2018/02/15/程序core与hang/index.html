@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Golang - Context," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="context 在 http 服务， rpc 服务等功能中经常被用到。 在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。 context 的接口定义 type Context interface{     Don">
-<meta name="keywords" content="Golang - Context">
+<meta name="description" content="core什么是 corecore dump memory dump system dump 包含了程序在特定时候的内存状态，通常是程序 crash 或者因为其他愿意意外终止。实际上，程序状态的其他信息通常也同时被记录了下来，包括处理器寄存器（PC 和堆栈信息） ,内存管理信息，其他处理器信息以及系统flag。 core dump 通常被用来帮组诊断和调试程序错误 core 文件所在位置/proc/">
+<meta name="keywords">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Golang 并发模式Context">
-<meta property="og:url" content="http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/index.html">
+<meta property="og:title" content="程序core">
+<meta property="og:url" content="http://ralphbupt.github.io/2018/02/15/程序core与hang/index.html">
 <meta property="og:site_name" content="Ralph's Blog">
-<meta property="og:description" content="context 在 http 服务， rpc 服务等功能中经常被用到。 在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。 context 的接口定义 type Context interface{     Don">
-<meta property="og:updated_time" content="2017-05-13T07:55:09.000Z">
+<meta property="og:description" content="core什么是 corecore dump memory dump system dump 包含了程序在特定时候的内存状态，通常是程序 crash 或者因为其他愿意意外终止。实际上，程序状态的其他信息通常也同时被记录了下来，包括处理器寄存器（PC 和堆栈信息） ,内存管理信息，其他处理器信息以及系统flag。 core dump 通常被用来帮组诊断和调试程序错误 core 文件所在位置/proc/">
+<meta property="og:updated_time" content="2018-03-14T17:17:09.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Golang 并发模式Context">
-<meta name="twitter:description" content="context 在 http 服务， rpc 服务等功能中经常被用到。 在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。 context 的接口定义 type Context interface{     Don">
+<meta name="twitter:title" content="程序core">
+<meta name="twitter:description" content="core什么是 corecore dump memory dump system dump 包含了程序在特定时候的内存状态，通常是程序 crash 或者因为其他愿意意外终止。实际上，程序状态的其他信息通常也同时被记录了下来，包括处理器寄存器（PC 和堆栈信息） ,内存管理信息，其他处理器信息以及系统flag。 core dump 通常被用来帮组诊断和调试程序错误 core 文件所在位置/proc/">
 
 
 
@@ -131,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/"/>
+  <link rel="canonical" href="http://ralphbupt.github.io/2018/02/15/程序core与hang/"/>
 
 
 
 
 
-  <title>Golang 并发模式Context | Ralph's Blog</title>
+  <title>程序core | Ralph's Blog</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -266,7 +266,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2018/02/15/程序core与hang/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="SleepyJimmy">
@@ -283,7 +283,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">Golang 并发模式Context</h2>
+          <h2 class="post-title" itemprop="name headline">程序core</h2>
         
 
         <div class="post-meta">
@@ -295,8 +295,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-13T15:48:53+08:00">
-                2017-05-13
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-15T00:55:43+08:00">
+                2018-02-15
               </time>
             
 
@@ -314,9 +314,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/05/13/Golang-并发模式Context/#comments" itemprop="discussionUrl">
+                <a href="/2018/02/15/程序core与hang/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/05/13/Golang-并发模式Context/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2018/02/15/程序core与hang/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -341,134 +341,15 @@
       
 
       
-        <p>context 在 http 服务， rpc 服务等功能中经常被用到。</p>
-<p>在 golang 并发编程中，channel 被用来在 goroutine 之间共享数据， 而 context 主要被用来保存一个 goroutine 和它创建的 goroutine 之间的上下文管理。可以用来传递变量和提供超时等功能。</p>
-<p>context 的接口定义</p>
-<pre><code>type Context interface{
-    Done() &lt;- chan struct{}
-    Err() error
-    Deadline()(deadline time.Time, ok bool)
-    Value(key interface{}) interface{}
-}
-</code></pre><p>该接口定义了四个函数来观察 context 的状态</p>
-<ul>
-<li>Done 返回一个当 context 被取消或者结束时候会被关闭的 channel</li>
-<li>Deadline 如果 context 被设置了过期时间，者返回该时间 如果没有定义该过期， 返回false </li>
-<li>Err 当 Done 返回的 channel 关闭后，Err 返回 non-nil 的 错误值。如果被取消返回 Canceled , 如果过期返回 DeadlineExceeded</li>
-<li>Value 返回和 context 相关联的值</li>
-</ul>
-<h2 id="默认-context"><a href="#默认-context" class="headerlink" title="默认 context"></a>默认 context</h2><p>context 包中提供了两个默认的 package</p>
-<pre><code>var (
-    todo       = context.TODO()
-    background = context.Background()
-)
-</code></pre><ul>
-<li>context.TODO  当不清楚该使用哪一个 context 的时候，可以使用 context.TODO </li>
-<li>BackGround 通常在初始化函数、main 函数等高层的的地方被使用</li>
-</ul>
-<p>两个 context 都没有取消、没有传值，也没有过期功能</p>
-<h2 id="其他-context"><a href="#其他-context" class="headerlink" title="其他 context"></a>其他 context</h2><p>context包提供了四种基础的 context</p>
-<ul>
-<li><p>context.WithCancel 返回一个 从 parent context 继承的 context。 如果 parent context 的 Done 返回的channel 别关闭或 CancelFunc 被调用的时候，该 context 的 Done 返回的 channel 也会被关闭。</p>
-<pre><code>func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
-    ctx, f := context.WithCancel(parent)
-    return ctx, CancelFunc(f)
-}
-</code></pre></li>
-<li><p>context.WithTimeout 返回一个 context。 当该 context 的 CancelFunc 被调用，或者 context 到期，或者 parent context 的 Done Channel  关闭，都会导致该 context 的Done channel 关闭</p>
-<pre><code>func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
-    return WithDeadline(parent, time.Now().Add(timeout))
-}
-</code></pre></li>
-<li><p>context.WithDeadline 和 WithTimeout 功能类似</p>
-<pre><code>func WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc) {
-    ctx, f := context.WithDeadline(parent, deadline)
-    return ctx, CancelFunc(f)
-}
-</code></pre></li>
-<li><p>context.WithValue 返回的 context 有一个 key-value map，该 context 及其子 goutine 都能使用该 map</p>
-<pre><code>func WithValue(parent Context, key interface{}, val interface{}) Context {
-    return context.WithValue(parent, key, val)
-}
-</code></pre></li>
-</ul>
-<h2 id="example"><a href="#example" class="headerlink" title="example"></a>example</h2><p>下面的一个例子中包含了 context 基本用法</p>
-<pre><code>package main
-
-import (
-    &quot;bufio&quot;
-    &quot;fmt&quot;
-    &quot;strings&quot;
-    &quot;time&quot;
-    &quot;context&quot;
-)
-
-// ctx 一般用作第一个参数
-func Inc(ctx context.Context, a int) {
-
-    // 此处用 ctx 的 value 来获取 一个值。 不过 ctx 的 value 通常情况下不用来传递参数。
-    // 此处只是用来说明 context.Value 的用法
-    intival := ctx.Value(&quot;interval&quot;).(time.Duration)
-
-    for {
-        select {
-        // 当子 ctx 的 cancelfunc 被调用的时候或者 context 到期， Done 关闭 
-        case &lt;-ctx.Done():
-            if ctx.Err() == context.Canceled {    　// ctx 的 cancel 被调用
-                fmt.Println(&quot;function canceled&quot;)
-                return
-            } else if ctx.Err() == context.DeadlineExceeded {
-                // WithDeadline 或 WithTimeout 设定的超时被触发
-                fmt.Println(&quot;function time out &quot;)
-                return
-            }
-        default:
-            time.Sleep(intival)
-            a++
-        }
-    }
-}
-
-func main() {
-    dura := time.Second * 1
-    ctx := context.WithValue(context.Background(), &quot;interval&quot;, dura)
-    ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-    // 先从 Background context 继承了一个带 value 的 context，再继承了一个带超时的 ctx。
-
-    go Inc(ctx, 0) // 新开一个 goutine, 传入当前 goroutine 的上下文  
-    // context 是 goroutine 安全的， 可以在多个 goroutine 中同时访问该 context
-
-    fmt.Print(&quot;Inc function is runnning&quot;)
-    if deadline, ok := ctx.Deadline(); ok {
-        fmt.Printf(&quot; %s second left to run the Inc function .\n&quot;, deadline.Sub(time.Now()).String())
-    }
-    // ctx.Deadline 主要获取ctx 的过期时间，如果没有设置超时的话 ok 会返回 false
-    reader := bufio.NewReader(os.Stdin)
-    for {
-
-        fmt.Printf(&quot;  Press A to abort: &quot;)
-        if line, err := reader.ReadString(&apos;\n&apos;); err == nil {
-            command := strings.TrimSuffix(line, &quot;\n&quot;)
-            switch command {
-            case &quot;A&quot;:
-                cancel()        // 手动调用 ctx 的cancelfunc ctx Done 返回的 channel 会关闭
-                time.Sleep(500 * time.Millisecond)
-                return
-            default:
-                if deadline, ok := ctx.Deadline(); ok {
-                    fmt.Printf(&quot;%s second left, Press A to stop `\n&quot;, deadline.Sub(time.Now()).String())
-                }
-            }
-        }
-    }
-}
-</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>遇到 context 了比较长一段时间了，之前一直看不明白。 这次用下心来发现也没有那么困难， 先尝试去理解，理解知乎去试着写一个 demo。 这样理解就会加深很多。然后，现在看的代码是在太少了，继续加油吧。</p>
-<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
-<li><a href="https://blog.golang.org/context" target="_blank" rel="external">https://blog.golang.org/context</a></li>
-<li><a href="https://blog.golang.org/pipelines" target="_blank" rel="external">https://blog.golang.org/pipelines</a></li>
-<li><a href="https://lycheng.github.io/2016/10/19/golang-context.html" target="_blank" rel="external">https://lycheng.github.io/2016/10/19/golang-context.html</a></li>
-<li><a href="http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/" target="_blank" rel="external">http://blog.ralch.com/tutorial/golang-concurrency-patterns-context/</a></li>
-</ul>
+        <h1 id="core"><a href="#core" class="headerlink" title="core"></a>core</h1><h2 id="什么是-core"><a href="#什么是-core" class="headerlink" title="什么是 core"></a>什么是 core</h2><p>core dump memory dump system dump 包含了程序在特定时候的内存状态，通常是程序 crash 或者因为其他愿意意外终止。实际上，程序状态的其他信息通常也同时被记录了下来，包括处理器寄存器（PC 和堆栈信息） ,<br>内存管理信息，其他处理器信息以及系统flag。 core dump 通常被用来帮组诊断和调试程序错误</p>
+<h2 id="core-文件所在位置"><a href="#core-文件所在位置" class="headerlink" title="core 文件所在位置"></a>core 文件所在位置</h2><p>/proc/sys/kernel/core_pattern 指定了程序发生core时保存的coredump 文件路径以及命名方式<br>/proc/sys/kernel/core_use_pid 控制文件名末尾是否加上pid作为扩展</p>
+<p>产生 core 文件的时候，需要设置系统的core文件大小， ulimit -c unlimited  不限制core文件大小,ulimit -c 0 可以阻止系统生成core文件</p>
+<h2 id="core-文件调试"><a href="#core-文件调试" class="headerlink" title="core 文件调试"></a>core 文件调试</h2><p>gdb + 程序名 + corefile</p>
+<p>可以看见程序在哪一个函数挂掉</p>
+<p>如果在编译的时候加上 -g 参数， 可以看见程序在哪一行挂掉</p>
+<p>注意事项： core 文件必需是对应的可执行文件产生的，否则符号表会对应不上</p>
+<h2 id="core-调试实例"><a href="#core-调试实例" class="headerlink" title="core 调试实例"></a>core 调试实例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">void do_it();</div><div class="line"></div><div class="line">int main()&#123;</div><div class="line">    do_it();</div><div class="line">    return 0;</div><div class="line">&#125;</div><div class="line">void do_it()&#123;</div><div class="line">    char *p = 1;</div><div class="line">    *p = &apos;a&apos;;</div><div class="line">&#125;</div><div class="line"></div><div class="line">gcc -g test.c</div><div class="line"></div><div class="line">./a.out  可见生成 core.&#123;pid&#125; 文件 </div><div class="line"></div><div class="line">然后 gdb a.out core.&#123;pid&#125;</div><div class="line"></div><div class="line">Core was generated by `./a.out&apos;.</div><div class="line">Program terminated with signal SIGSEGV, Segmentation fault.</div><div class="line">#0  0x00000000004005a5 in do_it () at test.c:9</div><div class="line">9	    *p = &apos;a&apos;;</div><div class="line">(gdb) bt</div><div class="line">#0  0x00000000004005a5 in do_it () at test.c:9</div><div class="line">#1  0x000000000040058e in main () at test.c:4</div></pre></td></tr></table></figure>
+<p>上述是网上很多人都在使用的例子，但是也给我们展示了几本的用用法，core dump 因为保存了整个内存的快照，所以其实我们能够获取到更多的信息，但是在此处就先不展开，用 gdb 应该能更方便的获取到跟多的信息</p>
 
       
     </div>
@@ -517,12 +398,6 @@ func main() {
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/Golang-Context/" rel="tag"># Golang - Context</a>
-          
-        </div>
-      
 
       
       
@@ -532,18 +407,14 @@ func main() {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/05/27/gRPC之metadata/" rel="next" title="gRPC之metadata(译)">
-                <i class="fa fa-chevron-left"></i> gRPC之metadata(译)
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/05/04/etcd-服务注册与发现/" rel="prev" title="etcd 服务注册与发现">
-                etcd 服务注册与发现 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/11/30/raft算法/" rel="prev" title="raft算法">
+                raft算法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -700,7 +571,7 @@ func main() {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#默认-context"><span class="nav-number">1.</span> <span class="nav-text">默认 context</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-context"><span class="nav-number">2.</span> <span class="nav-text">其他 context</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#example"><span class="nav-number">3.</span> <span class="nav-text">example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">5.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#core"><span class="nav-number">1.</span> <span class="nav-text">core</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-core"><span class="nav-number">1.1.</span> <span class="nav-text">什么是 core</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core-文件所在位置"><span class="nav-number">1.2.</span> <span class="nav-text">core 文件所在位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core-文件调试"><span class="nav-number">1.3.</span> <span class="nav-text">core 文件调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core-调试实例"><span class="nav-number">1.4.</span> <span class="nav-text">core 调试实例</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -843,9 +714,9 @@ func main() {
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://ralphbupt.github.io/2017/05/13/Golang-并发模式Context/';
-          this.page.identifier = '2017/05/13/Golang-并发模式Context/';
-          this.page.title = 'Golang 并发模式Context';
+          this.page.url = 'http://ralphbupt.github.io/2018/02/15/程序core与hang/';
+          this.page.identifier = '2018/02/15/程序core与hang/';
+          this.page.title = '程序core';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://pengcheng199.disqus.com/embed.js';
