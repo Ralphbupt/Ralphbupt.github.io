@@ -263,6 +263,270 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2018/04/08/初探-quic-协议篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SleepyJimmy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/wmm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ralph's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/08/初探-quic-协议篇/" itemprop="url">初探 quic 协议篇</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-08T22:33:04+08:00">
+                2018-04-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/08/初探-quic-协议篇/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/04/08/初探-quic-协议篇/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近开始研究 quic 协议，打算先整理和翻译了一下 quic 协议草案，虽然自己写完这篇文章之后发现网上已经有翻译的很好的版本， 如果有需要的话可以先看这个版本</p>
+<h1 id="quic-协议分析"><a href="#quic-协议分析" class="headerlink" title="quic 协议分析"></a>quic 协议分析</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>quic quick UDP Internet Connection 是一种新的基于UDP的多路复用的安全传输协议，设计目的是对 http/2 语法的优化， 设计时HTTP/2 作为主要的应用层协议，quic 提供了等效 HTTP/2 的多路复用以及流控，等效于 TLS的安全传输，可靠。 以及 TCP 的 拥塞控制<br>quic 作用于用户空间,现在 chrome 已经内置了 quic 的支持， 因为 quic 是基于用户空间的基于UDP的传输层协议, quic 跟新时不会受到因为各种设备或则中间设备对于新的传输层协议不支持、或者升级缓慢的影响。</p>
+<h2 id="概念与定义"><a href="#概念与定义" class="headerlink" title="概念与定义"></a>概念与定义</h2><p>quic 中年所有的整型， 包括长度、版本、类型 都是小端子节序，不是网络子节序。 quic 在动态大小的帧不强制实施字节对齐<br>接下来涉及到的一些术语有</p>
+<ul>
+<li>Client:</li>
+<li>Server:</li>
+<li>Endpoint: client or server end of a connection</li>
+<li>Stream: 基于 QUIC connction 的逻辑上的双向字节流</li>
+<li>Connection: 连个 QUIC EndPoint 之间的会话，</li>
+<li>Connection ID: quic 连接的标志</li>
+<li>QUIC Packet: 可以背quic 接收者解析的 UDP 包</li>
+<li>Stream Frame<h2 id="quic-概览"><a href="#quic-概览" class="headerlink" title="quic 概览"></a>quic 概览</h2>quic 在功能上等同于 TCP + TLS + HTTP/2, 但是基于 UDP 之上。 QUIC 对比 TCP + TLS + HTTP/2 的优势有</li>
+<li>连接建立的延迟</li>
+<li>弹性拥塞控制</li>
+<li>没有头部阻塞的多路复用</li>
+<li>Header 以及 Payload 的认证与加密</li>
+<li>stream 以及 connection的流控管理</li>
+<li>前向纠错</li>
+<li>连接迁移<h3 id="连接建立延迟"><a href="#连接建立延迟" class="headerlink" title="连接建立延迟"></a>连接建立延迟</h3>简单来说， quic 的握手通常只需要 0 个RTT，对比 TCP + TLS 的话通常需要1-3 个RTT<br>当一个 quic clent 首次连接到一个 server 的时候， client 必须执行 1 RTT的握手，这是为了获取到完成握手的必要信息。client 发送一个不完全的 hello（CHLO）。 server 发送一个 rejection（REJ）包，REJ 包中包含有 client 接下来所需要的信息。 其中包含一个源地址的token，这个token会在接下来的 CHLO 中用于验证 client 的IP。 REJ 包中叶包含了 server 端的证书，接下来client 端发送 CHLO 的时候，client 端可以用之前连接中缓存认证信息来立即发送加密的请求。<h3 id="弹性拥塞控制"><a href="#弹性拥塞控制" class="headerlink" title="弹性拥塞控制"></a>弹性拥塞控制</h3>quic 有可插拔的拥塞控制， 相比 TCP quic有更多的信号，因此可以给拥塞控制算法提供更多的信息， 同时 google 在实现 quic 的时候也重新实现了 TCP的拥塞控制， 同时也在实验其他的方案。<br>对于原始的数据包以及重传的包都携带一个新的序列号，这样发送方就能区分 ACK 是原始包的ACK或者是重传包的ACK。 QUIC 的ACK 包也携带了每一个帧的延迟信息，这样使得RTT计算更精确<h3 id="stream-和-connection-流控"><a href="#stream-和-connection-流控" class="headerlink" title="stream 和 connection 流控"></a>stream 和 connection 流控</h3>quic 提供了基于 stream 和基于 connection 的流控管理</li>
+<li>quic 数据的收发过程中都在特定stream上进行。接收者发送一个WINDOW_UPDATE 帧来告知自己希望接受的数据偏移量。 允许同伴发送更多的数据</li>
+<li>对于 connection 的流控管理和 stream 的类似，但是对于所有流的集合而言的。<h3 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h3></li>
+<li>基于 TCP 的HTTP/2 会受到 TCP 的头部阻塞影响， 因为HTTP/2 的多路复用中的不同流是基于TCP的单个子节流，一个TCP数据报文的丢失会阻塞所有的数据报的传输，直到重传包的到来</li>
+<li>因为quic是为了多路复用而设计的，所以当一个流的数据包丢失只会影响到特定的流，其他的流可以正常的传输数据</li>
+<li>警告: quic 现在压缩头部是通过 HTTP/2 HPACK 头部压缩，将会对header 加强header帧的头部阻塞<h3 id="头部和负载的校验与加密"><a href="#头部和负载的校验与加密" class="headerlink" title="头部和负载的校验与加密"></a>头部和负载的校验与加密</h3>TCP 的头部是明文且咩有考验，导致头部注入以及头部操作等诸多问题， 其中一部分是主动的攻击，另一部分是中间设备试图提升TCP的性能儿做的。 这些给TCP的升级带来了组多问题<br>quic 的 packet 始终被加密过<h3 id="前向纠错"><a href="#前向纠错" class="headerlink" title="前向纠错"></a>前向纠错</h3>quic 现在使用简单的 XOR-based FEC 计划， 当一组packet中的一个 packet 丢失后， quic 可以根据 FEC 帧和组里的其他帧恢复出这组帧里的数据。<h3 id="连接迁移"><a href="#连接迁移" class="headerlink" title="连接迁移"></a>连接迁移</h3></li>
+<li>一个TCP连接采用 4元组来标识每一个连接（clientIP:clientPort:serverIp:serverPort）， 所以当四元组的某一项发生改变的时候，（例如 client 从4G 切换到WIFI）， 那么TCP的连接就会断开</li>
+<li>QUIC 的连接通过一个随机的64位 connectionID来标识每一个连接， 所以当IP地址改变或者NAT重新绑定的时候 Connection ID 保持不变，QUIC 也提供了连接迁移时候的自动加密验证。迁移后的连接使用同样的 session Key 来加密和解密数据帧</li>
+</ul>
+<h2 id="packet-类型与格式"><a href="#packet-类型与格式" class="headerlink" title="packet 类型与格式"></a>packet 类型与格式</h2><p>QUIC 有四种 packet 类型</p>
+<ul>
+<li>Version Negotiation Packets</li>
+<li>Frame Packets</li>
+<li>FEC Packets</li>
+<li>Public Reset Packets<br>所有的 QUIC packet 大小都应该低于路径的 MTU， 路径 MTU 的发现由进程负责实现， QUIC 在IPv6 最大支持 1350 的packet ， IPv4<br>最大支持 1370<h3 id="QUIC普通帧头部"><a href="#QUIC普通帧头部" class="headerlink" title="QUIC普通帧头部"></a>QUIC普通帧头部</h3>所有的QUIC 帧都有一个 2-21 字节的头部， 头部的格式如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">0 1 2 3 4 8</div><div class="line">+--------+--------+--------+--------+--------+--- ---+</div><div class="line">| Public | Connection ID (0, 8, 32, or 64) ... | -&gt;</div><div class="line">|Flags(8)| (variable length) |</div><div class="line">+--------+--------+--------+--------+--------+--- ---+</div><div class="line">9 10 11 12</div><div class="line">+--------+--------+--------+--------+</div><div class="line">| Quic Version (32) | -&gt;</div><div class="line">| (optional) |</div><div class="line">+--------+--------+--------+--------+</div><div class="line">13 14 15 16 17 18 19 20</div><div class="line">+--------+--------+--------+--------+--------+--------+--------+--------+</div><div class="line">| Sequence Number (8, 16, 32, or 48) |Private | FEC (8)|</div><div class="line">| (variable length) |Flags(8)| (opt) |</div><div class="line">+--------+--------+--------+--------+--------+--------+--------+--------+</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>从 Private Flags 开始的数据是加密过的</p>
+<ul>
+<li>Public Flags</li>
+<li>0x01： packet 是否包含 Quic Version</li>
+<li>0x02： packet 是否是 Public Reset Packets</li>
+<li>0x0C 的两比特： Connection ID 长度</li>
+<li>00 省略 conncetion ID</li>
+<li>01 1 字节</li>
+<li>10 4字节</li>
+<li>11 8 字节</li>
+<li>0x30 的两比特: Sequence Number 长度</li>
+<li>00 1 字节</li>
+<li>01 2 字节</li>
+<li>10 4 字节</li>
+<li><p>11 8 字节</p>
+</li>
+<li><p>Connection ID: client 端产生的一个64位无符号整型，标识唯一的连接， 可以和server 端协商 Connection ID 长度</p>
+</li>
+<li>QUIC Version: 32 位的版本号</li>
+<li>Sequence Number: 版本号</li>
+<li>Private Flags:</li>
+<li>0x01</li>
+<li>0x02</li>
+<li>0x04 是否是FEC packet</li>
+<li>FEC 8bit 的group number 偏移量，仅仅当Private Flags 中设置是 FEC packet 才有<h3 id="Version-Negotiation-Packets"><a href="#Version-Negotiation-Packets" class="headerlink" title="Version Negotiation Packets"></a>Version Negotiation Packets</h3>描述版本协商信息的 QUIC packet<h3 id="Frame-Packet"><a href="#Frame-Packet" class="headerlink" title="Frame Packet"></a>Frame Packet</h3>包含一系列的以类型为前缀的负载<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">+--------+---...---+--------+---...---+</div><div class="line">| Type | Payload | Type | Payload |</div><div class="line">+--------+---...---+--------+---...---+</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="FEC-Pakcet"><a href="#FEC-Pakcet" class="headerlink" title="FEC Pakcet"></a>FEC Pakcet</h3><p>一个 FEC 分组中的冗余数据信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">+-----...----+</div><div class="line">| Redundancy |</div><div class="line">+-----...----+</div></pre></td></tr></table></figure></p>
+<h3 id="Public-Reset-Packets"><a href="#Public-Reset-Packets" class="headerlink" title="Public Reset Packets"></a>Public Reset Packets</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">0 1 2 3 4 8</div><div class="line">+--------+--------+--------+--------+--------+-- --+</div><div class="line">| Public | Connection ID (64) ... | -&gt;</div><div class="line">|Flags(8)| |</div><div class="line">+--------+--------+--------+--------+--------+-- --+</div><div class="line">9 10 11 12 13 14</div><div class="line">+--------+--------+--------+--------+--------+--------+---</div><div class="line">| Quic Tag (32) | Tag value map ... -&gt;</div><div class="line">| (PRST) | (variable length)</div><div class="line">+--------+--------+--------+--------+--------+--------+---</div></pre></td></tr></table></figure>
+<h2 id="QUIC-connection-生命周期"><a href="#QUIC-connection-生命周期" class="headerlink" title="QUIC connection 生命周期"></a>QUIC connection 生命周期</h2><h3 id="connection-连接建立"><a href="#connection-连接建立" class="headerlink" title="connection 连接建立"></a>connection 连接建立</h3><p>client 端负责初始化建立连接， 建立连接包括 协商加密方式以及传输层的握手， 在建立连接的过程中， quic 会发送很多 Tags 来协商各种参数， 同时握手的数据被包含在 Frame Packets 中</p>
+<h3 id="数据传输"><a href="#数据传输" class="headerlink" title="数据传输"></a>数据传输</h3><ul>
+<li>quic 实现了可靠性、拥塞控制、流控。 QUIC 的流控和 HTTP／2 很相似， 一个 QUIC 的 连接采用单一的sequence number 空间</li>
+<li>所有的数据传输都是在 stream 内的<h4 id="QUIC-stream-生命周期"><a href="#QUIC-stream-生命周期" class="headerlink" title="QUIC stream 生命周期"></a>QUIC stream 生命周期</h4></li>
+<li>stream 是独立的双向字节流， 可以被客户端和服务端创建，可以并发的和其他stream 收发数据， quic stream 的生命周期和 HTTP/2 模型相似</li>
+<li>stream 创建是隐式的，为了避免 stream-ID 碰撞， server 端创建的streamID 是偶数的， client 端的则是基数， 0 是无效的 streamID， streamID 1 被保留用作密钥握手，stream 3 被保留用于发送所有其他流的header。</li>
+<li>每一端创建的streamID必须是单调递增的。</li>
+<li>一旦一个stream 被创建，这个stream 可以用来收发数据 Frame ，直到该方向的stream被终止</li>
+<li>client、server 都可以正常的关闭stream，有以下三种情况一个stream 会被终止</li>
+<li>正常终止 因为stream 是双向的，当一方关闭stream 后， stream 就变成了半关闭的，（只能接收不能发送），当另一端也关闭之后， stream 则被认为是关闭了。</li>
+<li>突然终止 client 和 server 可以发送 RST_STREAM frame ，这样接收方则认为可以关闭 stream</li>
+<li>connection 被终止<h3 id="连接终止"><a href="#连接终止" class="headerlink" title="连接终止"></a>连接终止</h3>quic 在保持空闲到约定的时间之前都应该保持打开状态， 当 server 端决定终止一个空闲的连接的时候， server 端因该避免通知client端。 一个 connection 建立成功之后有以下两种方式被关闭</li>
+<li>主动关闭 一个 endpoint 可以发送一个 CONNECTION_CLOSE 帧给同伴，说明开始关闭 connection， endpoint 也可以发送更高优先级的 GOAWAY 帧来表示连接将要被关闭。</li>
+<li>被动关闭 一个 QUIC connection 的默认空闲超时是 30 s， 最大超时时长是 10 m，如果在 空闲超时的时间内没有网络活动，连接将会被关闭，一个默认的 CONNECTION_CLOSE 将会被发送</li>
+</ul>
+<h2 id="帧的数据类型"><a href="#帧的数据类型" class="headerlink" title="帧的数据类型"></a>帧的数据类型</h2><p>对于 frame 有两种解释，因此也有两种类型的帧</p>
+<ul>
+<li>特殊类型数据帧</li>
+<li>普通数据帧 普通的字节数据<h3 id="特殊数据帧"><a href="#特殊数据帧" class="headerlink" title="特殊数据帧"></a>特殊数据帧</h3></li>
+<li>STREAM 创建stream ， 在stream 上发送数据</li>
+<li>ACK receiver 收到了哪些帧，哪些帧丢失了</li>
+<li>CONGESTION_FEEDBACK</li>
+<li>PADDING 填充数据</li>
+<li>RST_STREAM 关闭一个stream</li>
+<li>CONNECTION_CLOSE （实验性的frame，还没启用）</li>
+<li>GOAWAY</li>
+<li>WINDOW_UPDATE 告诉对端增加 流控的frame， 当其中的stream ID为0 的时候，是指对 connection, 大于0 时对于特定的 stream</li>
+<li>BLOCKED 告诉对端现在流控的窗口被阻塞，不能接受数据</li>
+<li>STOP_WAITING 告诉对端不要再等待低于特定序列号的 packet</li>
+<li>PING</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>QUIC crypto 协议是 QUIC 的一部分， QUIC 加密协议可以提供安全的传输层连接。 QUIC crypto 设计时就将会被遗弃，将来会被 TLS 1.3 所代替， QUIC crypto 是在TLS1.3 之前的过度协议</p>
+<p>基于现有的 QUIC crypto 协议，如果客户端缓存了 server 端的信息， 客户端可以在 0 个 RTT 内建立 加密的连接， TLS 则需要至少2RTT</p>
+<h2 id="Source-address-spoofing"><a href="#Source-address-spoofing" class="headerlink" title="Source address spoofing"></a>Source address spoofing</h2><ul>
+<li><p>互联网上的协议很少没有 RTT的， 大多数协议至少有一个RTT （TCP）, 2RTT（TLS).</p>
+</li>
+<li><p>通常这些RTT内都会交换信息，TCP中的序列号、TLS中的随机数。TCP 的随机值可以防止 IP地址欺骗， TLS 的随机数可以防止重播攻击。任何试图减少 RTT 的协议都会遇到这两个问题。</p>
+</li>
+<li>例如在DNS协议中， DNS 协议没有RTT，DNS 直接无视 源地址欺骗，因此Ddos 是一个问题，对于重播攻击，DNSSEC 依靠时钟同步和一个短时间的签名来实现</li>
+<li>QUIC 通过给 client 发行一个 源地址token（source-address-token），token 对于client来说就是一段不透明的字节，对于server 端来说， token 是一段至少包含了 client IP 地址和server端的时间戳的经过加密和验证了的时间戳。</li>
+<li>server 只会给目标IP发送其IP的token，client 则保留token视为自己拥有该IP</li>
+<li>如果client端IP地址发生改变，token则被视为过期，如果client端没有token，sercer端会拒绝该连接，如果client 端没有改变IP地址，则可以重用该TOKEN</li>
+<li>token的生命周期由server端负责管理。但是 client 端的token可以被盗取用来绕开基于IP地址的限制，（攻击者不会收到回应）， 在DHCP等环境下，如果client的IP地址发生了改变，TOKEN 仍然可以被使用。</li>
+<li>在QUIC协议中，一旦一个连接建立 之后， QUIC 在数据报包中包含墒比特，用来要求接收端发送收到的墒比特的hash</li>
+</ul>
+<h2 id="重放保护"><a href="#重放保护" class="headerlink" title="重放保护"></a>重放保护</h2><ul>
+<li>在 TLS 中， 每一端都会发送一个随机数用来保证对端是最新的，如果没有RTT， 客户端仍然可以发送随机数给 server，但是server则没有机会给client端发送随机数</li>
+<li>在 如果没有server端的输入信息来提供重放保护的代价很昂贵，需要server 端保持状态一致。 如果server端只有一台的话代价还好，但是现在各种服务基本是是分布式的</li>
+<li>QUIC 不能给在收到server端的第一次回复之前的数据提供重放保护，这个需要应用程序自己去决定相关的安全性， 例如在chrome中，只有 GET 请求可以在 握手认证之前发送数据</li>
+</ul>
+<h2 id="握手"><a href="#握手" class="headerlink" title="握手"></a>握手</h2><p>为了执行0-RTT的握手，client 需要有已经被验证的 server 配置。</p>
+<ul>
+<li><p>一开始 client 不知道server端的信息， 所以在握手开始之前， client 端将会发送一个 “不完全的” client Hello 消息去获得server端的配置以及server端的认证信息，这个过程可能持续好几个RTT 的  “不完全的” client hello 请求，因为在这个过程中server 也不愿意发送大量的认证信息给未验证的IP地址</p>
+</li>
+<li><p>Client hello 消息含有 CHLO tag 以及以下的各种 tag／value 数值</p>
+</li>
+<li>SNI Server Name Indication (optional) RFC 5890 , 不能是 IP 地址</li>
+<li>STK Source-address token (optional) server 给的token</li>
+<li>PDMD Proof demand: 现在只有 x509</li>
+<li>CCS  Common certificate sets (optional): 客户端证书hash</li>
+<li>CCRT Cached certificates (optional):  客户端缓存的server证书hash‘</li>
+<li>VER 客户端quic 版本</li>
+<li>XLCT 客户端期望server使用的叶结点证书的hash</li>
+<li>不同版本的协议有不同的tag， 比如最大流的数量等</li>
+<li>作为 CHLO 的回应， server 将会发送 SHLO 或者 rejection。 SHLO 意味着握手已经成功， rejection 包含了 client 端去构造一个完整的握手请求所需要的信息</li>
+<li>rejection  有 REJ 标签， 同时还有以下的tag／value 数据</li>
+<li>SCFG server config (optional):</li>
+<li>STK Source-address token (optional)</li>
+<li>SNO Server nonce (optional)</li>
+<li>STTL server config 的有效期</li>
+<li>ff545243 Certificate chain (optional)</li>
+<li>PROF  Proof of authenticity (optional)</li>
+<li>SCFG 中包含了加密算法等其他信息</li>
+<li>一旦client 端收到了server config， 并且已经被验证了之后，client 端可以构造一个不会失败的 CHLO 请求， 同时这个完整的请求比之前的 CHLO 多了一些 SCFG 中的 TAG, 比如加密所用的公钥等</li>
+<li>一旦 client 端发送了完整的 CHLO 请求之后，client 接受请求和发送信息都要使用加密。</li>
+<li>这时候client 可以自由的给server 发送数据而不用等待回复</li>
+<li>握手成功之后， server 将会返回一个 SHLO 信息， 而且是加密过的</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://ralphbupt.github.io/2018/02/15/程序core与hang/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3789,7 +4053,7 @@ func main() {
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">15</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -3802,7 +4066,7 @@ func main() {
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
