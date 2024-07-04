@@ -139,7 +139,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/04/111/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -157,7 +157,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/07/04/111/" class="post-title-link" itemprop="url">High-Performance Go Service Architecture for Millions of Connections at Baidu</a>
+          <a href="/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/" class="post-title-link" itemprop="url">High-Performance Go Service Architecture for Millions of Connections at Baidu</a>
         </h2>
 
         <div class="post-meta-container">
@@ -169,7 +169,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2024-07-04 14:58:46 / Modified: 15:45:14" itemprop="dateCreated datePublished" datetime="2024-07-04T14:58:46+08:00">2024-07-04</time>
+      <time title="Created: 2024-07-04 14:58:46 / Modified: 19:12:36" itemprop="dateCreated datePublished" datetime="2024-07-04T14:58:46+08:00">2024-07-04</time>
     </span>
 
   
@@ -246,9 +246,13 @@
 <li>Upstream and downstream data forwarding, accommodating different business data protocols.</li>
 <li>Downstream push, supporting unicast, batch unicast, and broadcast.</li>
 </ol>
+<p><img src="/images/lcs/func.png" alt="functional goals"></p>
 <h2 id="3-2-Performance-Optimization"><a href="#3-2-Performance-Optimization" class="headerlink" title="3.2 Performance Optimization"></a>3.2 Performance Optimization</h2><p>The unified long connection service must achieve high concurrency, high availability, and high stability to serve Baidu’s apps. Specific performance aspects include:</p>
 <h3 id="3-2-1-Connection-QPS-latency-and-success-rate"><a href="#3-2-1-Connection-QPS-latency-and-success-rate" class="headerlink" title="3.2.1 Connection QPS, latency, and success rate"></a>3.2.1 Connection QPS, latency, and success rate</h3><p>Long connections need to be established quickly when the app opens and maintained while the app is active. The service must support thousands of QPS for connection establishment and millions of concurrent online connections, with horizontal scaling capabilities. Connection establishment is fundamental, with success rate and latency being critical.</p>
-<h3 id="3-2-2-Upstream-request-QPS-latency-and-success-rate"><a href="#3-2-2-Upstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.2 Upstream request QPS, latency, and success rate:"></a>3.2.2 Upstream request QPS, latency, and success rate:</h3><h3 id="3-2-3-Downstream-request-QPS-latency-and-success-rate"><a href="#3-2-3-Downstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.3 Downstream request QPS, latency, and success rate:"></a>3.2.3 Downstream request QPS, latency, and success rate:</h3><h1 id="4-Overall-Introduction"><a href="#4-Overall-Introduction" class="headerlink" title="4 Overall Introduction"></a>4 Overall Introduction</h1><h1 id="4-1-Overall-Architecture"><a href="#4-1-Overall-Architecture" class="headerlink" title="4.1 Overall Architecture"></a>4.1 Overall Architecture</h1><h1 id="4-2-Core-Processes"><a href="#4-2-Core-Processes" class="headerlink" title="4.2 Core Processes"></a>4.2 Core Processes</h1><h1 id="4-3-State-Management"><a href="#4-3-State-Management" class="headerlink" title="4.3 State Management"></a>4.3 State Management</h1><h1 id="4-4-Multi-Business-Support"><a href="#4-4-Multi-Business-Support" class="headerlink" title="4.4 Multi-Business Support"></a>4.4 Multi-Business Support</h1><h1 id="4-5-Performance-Optimization"><a href="#4-5-Performance-Optimization" class="headerlink" title="4.5 Performance Optimization"></a>4.5 Performance Optimization</h1><h1 id="4-6-Service-Deployment"><a href="#4-6-Service-Deployment" class="headerlink" title="4.6 Service Deployment"></a>4.6 Service Deployment</h1>
+<h3 id="3-2-2-Upstream-request-QPS-latency-and-success-rate"><a href="#3-2-2-Upstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.2 Upstream request QPS, latency, and success rate:"></a>3.2.2 Upstream request QPS, latency, and success rate:</h3><p>Once the connection is established, business requests need to be forwarded to the backend, supporting at least tens to hundreds of thousands of QPS, with horizontal scaling.</p>
+<h3 id="3-2-3-Downstream-request-QPS-latency-and-success-rate"><a href="#3-2-3-Downstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.3 Downstream request QPS, latency, and success rate:"></a>3.2.3 Downstream request QPS, latency, and success rate:</h3><p>Depending on the business scenario, downstream requests may involve batch unicast or multicast. Generally, batch unicast should support millions of UPS, and multicast should support tens of millions of UPS, with horizontal scaling.</p>
+<h1 id="4-Overall-Introduction"><a href="#4-Overall-Introduction" class="headerlink" title="4 Overall Introduction"></a>4 Overall Introduction</h1><h1 id="4-1-Overall-Architecture"><a href="#4-1-Overall-Architecture" class="headerlink" title="4.1 Overall Architecture"></a>4.1 Overall Architecture</h1><h1 id="4-2-Core-Processes"><a href="#4-2-Core-Processes" class="headerlink" title="4.2 Core Processes"></a>4.2 Core Processes</h1><h1 id="4-3-State-Management"><a href="#4-3-State-Management" class="headerlink" title="4.3 State Management"></a>4.3 State Management</h1><h1 id="4-4-Multi-Business-Support"><a href="#4-4-Multi-Business-Support" class="headerlink" title="4.4 Multi-Business Support"></a>4.4 Multi-Business Support</h1><h1 id="4-5-Performance-Optimization"><a href="#4-5-Performance-Optimization" class="headerlink" title="4.5 Performance Optimization"></a>4.5 Performance Optimization</h1><h1 id="4-6-Service-Deployment"><a href="#4-6-Service-Deployment" class="headerlink" title="4.6 Service Deployment"></a>4.6 Service Deployment</h1><p>Chinese version<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/E8rO4uBkFpcLAb_LsBOphw">https://mp.weixin.qq.com/s/E8rO4uBkFpcLAb_LsBOphw</a></p>
+
       
     </div>
 
