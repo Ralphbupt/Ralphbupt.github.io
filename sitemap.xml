@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://ralphbupt.github.io/google68b41c4f12baf575.html</loc>
+    
+    <lastmod>2024-07-05</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://ralphbupt.github.io/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/</loc>
     
     <lastmod>2024-07-05</lastmod>
