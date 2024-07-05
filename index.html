@@ -20,9 +20,9 @@
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
+<meta property="og:title" content="Link&#39;s blog">
 <meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Link&#39;s blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="Link">
 <meta name="twitter:card" content="summary">
@@ -35,7 +35,7 @@
 <script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"en","comments":"","permalink":"","path":"index.html","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Hexo</title>
+<title>Link's blog</title>
   
 
 
@@ -58,6 +58,9 @@
       <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
   </div>
 
@@ -65,7 +68,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Hexo</h1>
+      <h1 class="site-title">Link's blog</h1>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -78,6 +81,10 @@
 
 
 
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
 
 
 
@@ -147,12 +154,12 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Link's blog">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Hexo">
+      <meta itemprop="name" content="undefined | Link's blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
@@ -167,9 +174,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2024-07-04 14:58:46 / Modified: 19:12:36" itemprop="dateCreated datePublished" datetime="2024-07-04T14:58:46+08:00">2024-07-04</time>
+      <time title="Created: 2024-07-04 14:58:46" itemprop="dateCreated datePublished" datetime="2024-07-04T14:58:46+08:00">2024-07-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-05 14:24:43" itemprop="dateModified" datetime="2024-07-05T14:24:43+08:00">2024-07-05</time>
     </span>
 
   
@@ -184,28 +197,38 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="1-introductuon"><a href="#1-introductuon" class="headerlink" title="1 introductuon"></a>1 introductuon</h1><p>In the mobile internet era, the demand for real-time and interactive services has surged, making long connection services essential for applications. Unlike short connections, which follow a request-response model, long connections keep a network data channel open between the application and the server for continuous, full-duplex data transmission, allowing the server to push data to users in real-time.</p>
 <p>Long connection services must achieve low latency, high concurrency, and high stability, which can be challenging and costly if each business maintains its own service. Therefore, the unified long connection project aims to provide a comprehensive solution, offering secure, high-concurrency, low-latency, easy-to-integrate, and cost-effective long connection services for various businesses.</p>
+<img src="images/lcs/background.png" width="500" height="400" alt="lcs" title="background">
+
+
 <h1 id="2-Unified-Long-Connection-Service"><a href="#2-Unified-Long-Connection-Service" class="headerlink" title="2 Unified Long Connection Service"></a>2 Unified Long Connection Service</h1><p>The primary goal of the unified long connection service is to offer businesses a secure, high-concurrency, low-latency, easily integrable, and cost-effective long connection system. Key objectives include:</p>
+<blockquote>
 <ul>
 <li>Supporting major Baidu app scenarios such as live streaming, messaging, PUSH, and cloud control with secure long connection capabilities.</li>
 <li>Ensuring high concurrency, stability, and low latency, maintaining the system’s professionalism and advanced nature.</li>
 <li>Enabling multiple business long connection reuse, reducing the cost and burden of establishing and maintaining connections.</li>
 <li>Providing a straightforward integration process with clear external interfaces for quick business integration.</li>
 </ul>
+</blockquote>
+<p><img src="/images/lcs/tback.png" alt="background"></p>
 <h1 id="3-Challenges"><a href="#3-Challenges" class="headerlink" title="3 Challenges"></a>3 Challenges</h1><p>To build a long connection service that meets business needs, the unified long connection service faces several challenges during its design, development, and maintenance. These challenges primarily fall into two categories:</p>
 <h2 id="3-1-Functionality-Implementation"><a href="#3-1-Functionality-Implementation" class="headerlink" title="3.1 Functionality Implementation"></a>3.1 Functionality Implementation</h2><p>The main challenge in designing a long connection service is defining clear boundaries between the unified service and individual business integrations. Unlike dedicated services for specific businesses, the unified service must support multiple businesses sharing a single long connection. This requires accommodating various business requirements and scenarios while avoiding excessive business logic in the unified service to ensure scalability and future development.</p>
 <p>Typical business requirements for long connection services include:</p>
+<blockquote>
 <ul>
 <li>Establishing, maintaining, and managing connections.</li>
 <li>Forwarding upstream requests.</li>
 <li>Pushing downstream data.</li>
 </ul>
+</blockquote>
 <p>During data transmission, the service must support different data protocols and push models depending on the business type:</p>
+<blockquote>
 <ul>
 <li>Messaging: Private messages and small group chats (500-1000 members),<br>primarily using unicast and batch unicast push modes with varying push frequency and concurrency.</li>
 <li>Live Streaming: Multicast to millions of viewers with high push frequency.</li>
 <li>cloud control: Sending messages to fixed groups in batch unicast mode</li>
 <li>PUSH Notifications: Sending messages to fixed groups in batch unicast mode with lower push frequency.</li>
 </ul>
+</blockquote>
 <table>
 <thead>
 <tr>
@@ -241,17 +264,94 @@
 </tr>
 </tbody></table>
 <p>Consequently, the unified long connection service must provide the following capabilities:</p>
+<blockquote>
 <ol>
 <li>Connection establishment, maintenance, and management.</li>
 <li>Upstream and downstream data forwarding, accommodating different business data protocols.</li>
 <li>Downstream push, supporting unicast, batch unicast, and broadcast.</li>
 </ol>
+</blockquote>
 <p><img src="/images/lcs/func.png" alt="functional goals"></p>
 <h2 id="3-2-Performance-Optimization"><a href="#3-2-Performance-Optimization" class="headerlink" title="3.2 Performance Optimization"></a>3.2 Performance Optimization</h2><p>The unified long connection service must achieve high concurrency, high availability, and high stability to serve Baidu’s apps. Specific performance aspects include:</p>
-<h3 id="3-2-1-Connection-QPS-latency-and-success-rate"><a href="#3-2-1-Connection-QPS-latency-and-success-rate" class="headerlink" title="3.2.1 Connection QPS, latency, and success rate"></a>3.2.1 Connection QPS, latency, and success rate</h3><p>Long connections need to be established quickly when the app opens and maintained while the app is active. The service must support thousands of QPS for connection establishment and millions of concurrent online connections, with horizontal scaling capabilities. Connection establishment is fundamental, with success rate and latency being critical.</p>
-<h3 id="3-2-2-Upstream-request-QPS-latency-and-success-rate"><a href="#3-2-2-Upstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.2 Upstream request QPS, latency, and success rate:"></a>3.2.2 Upstream request QPS, latency, and success rate:</h3><p>Once the connection is established, business requests need to be forwarded to the backend, supporting at least tens to hundreds of thousands of QPS, with horizontal scaling.</p>
-<h3 id="3-2-3-Downstream-request-QPS-latency-and-success-rate"><a href="#3-2-3-Downstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.3 Downstream request QPS, latency, and success rate:"></a>3.2.3 Downstream request QPS, latency, and success rate:</h3><p>Depending on the business scenario, downstream requests may involve batch unicast or multicast. Generally, batch unicast should support millions of UPS, and multicast should support tens of millions of UPS, with horizontal scaling.</p>
-<h1 id="4-Overall-Introduction"><a href="#4-Overall-Introduction" class="headerlink" title="4 Overall Introduction"></a>4 Overall Introduction</h1><h1 id="4-1-Overall-Architecture"><a href="#4-1-Overall-Architecture" class="headerlink" title="4.1 Overall Architecture"></a>4.1 Overall Architecture</h1><h1 id="4-2-Core-Processes"><a href="#4-2-Core-Processes" class="headerlink" title="4.2 Core Processes"></a>4.2 Core Processes</h1><h1 id="4-3-State-Management"><a href="#4-3-State-Management" class="headerlink" title="4.3 State Management"></a>4.3 State Management</h1><h1 id="4-4-Multi-Business-Support"><a href="#4-4-Multi-Business-Support" class="headerlink" title="4.4 Multi-Business Support"></a>4.4 Multi-Business Support</h1><h1 id="4-5-Performance-Optimization"><a href="#4-5-Performance-Optimization" class="headerlink" title="4.5 Performance Optimization"></a>4.5 Performance Optimization</h1><h1 id="4-6-Service-Deployment"><a href="#4-6-Service-Deployment" class="headerlink" title="4.6 Service Deployment"></a>4.6 Service Deployment</h1><p>Chinese version<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/E8rO4uBkFpcLAb_LsBOphw">https://mp.weixin.qq.com/s/E8rO4uBkFpcLAb_LsBOphw</a></p>
+<table>
+<thead>
+<tr>
+<th>performance</th>
+<th>standard</th>
+<th>desc</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>concurrent connections</td>
+<td>10M level</td>
+<td>horizontal scaling</td>
+</tr>
+<tr>
+<td>upstream qps</td>
+<td>1M Level</td>
+<td>horizontal scaling</td>
+</tr>
+<tr>
+<td>downstream qps</td>
+<td>10M Level</td>
+<td>horizontal scaling</td>
+</tr>
+<tr>
+<td>latency</td>
+<td>10ms level</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="3-2-1-Connection-QPS-latency-and-success-rate"><a href="#3-2-1-Connection-QPS-latency-and-success-rate" class="headerlink" title="3.2.1 Connection QPS, latency, and success rate"></a>3.2.1 Connection QPS, latency, and success rate</h3><blockquote>
+<p>Long connections need to be established quickly when the app opens and maintained while the app is active. The service must support thousands of QPS for connection establishment and millions of concurrent online connections, with horizontal scaling capabilities. Connection establishment is fundamental, with success rate and latency being critical.</p>
+</blockquote>
+<h3 id="3-2-2-Upstream-request-QPS-latency-and-success-rate"><a href="#3-2-2-Upstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.2 Upstream request QPS, latency, and success rate:"></a>3.2.2 Upstream request QPS, latency, and success rate:</h3><blockquote>
+<p>Once the connection is established, business requests need to be forwarded to the backend, supporting at least tens to hundreds of thousands of QPS, with horizontal scaling.</p>
+</blockquote>
+<h3 id="3-2-3-Downstream-request-QPS-latency-and-success-rate"><a href="#3-2-3-Downstream-request-QPS-latency-and-success-rate" class="headerlink" title="3.2.3 Downstream request QPS, latency, and success rate:"></a>3.2.3 Downstream request QPS, latency, and success rate:</h3><blockquote>
+<p>Depending on the business scenario, downstream requests may involve batch unicast or multicast. Generally, batch unicast should support millions of UPS, and multicast should support tens of millions of UPS, with horizontal scaling.</p>
+</blockquote>
+<h1 id="4-1-Overall-Architecture"><a href="#4-1-Overall-Architecture" class="headerlink" title="4.1 Overall Architecture"></a>4.1 Overall Architecture</h1><p><img src="/images/lcs/overall.png" alt="background"></p>
+<h2 id="4-1-1-Architecture"><a href="#4-1-1-Architecture" class="headerlink" title="4.1.1 Architecture"></a>4.1.1 Architecture</h2><p>The long connection service consists of four main components: the Unified Long Connection SDK, the Control Layer, the Access Layer, and the Route Layer.</p>
+<blockquote>
+<ol>
+<li><p>Unified Long Connection SDK:</p>
+<ol>
+<li>Connects the business SDK to the long connection server.</li>
+<li>Requests tokens for device authentication, long connection access points, and protocols from the control layer.</li>
+<li>Establishes and maintains long connections with the access layer, triggering reconnections if the connection is unstable.</li>
+<li>Forwards requests from various business SDKs to the long connection service.</li>
+<li>Receives data from the long connection server and forwards it to the appropriate business SDK.</li>
+</ol>
+</li>
+<li><p>Control Layer:</p>
+<ol>
+<li>Verifies device legitimacy and determines access strategies before connection establishment.</li>
+<li>Generates and verifies tokens for device authentication.</li>
+<li>Assigns access points based on client properties.</li>
+<li>Manages small traffic control strategies.</li>
+</ol>
+</li>
+<li><p>Access Layer:</p>
+<ol>
+<li>Peer Communication: Establishes, maintains, and releases long connections with the SDK.</li>
+<li>Connection Management: Manages connections and maps connection IDs to connection information.</li>
+<li>Group Management: Manages connection groups and maps group IDs to connection information.</li>
+<li>Upstream Forwarding: Forwards business requests to the backend and returns responses to the SDK.</li>
+<li>Downstream Pushing: Receives push requests and sends them to the corresponding SDK.</li>
+</ol>
+</li>
+<li><p>Route Layer:</p>
+<ol>
+<li>Maps device identifiers to connection identifiers.</li>
+<li>Allows querying of connection identifiers based on device identifiers for targeted pushing.</li>
+</ol>
+</li>
+</ol>
+</blockquote>
+<h2 id="4-1-1-Core-Processes"><a href="#4-1-1-Core-Processes" class="headerlink" title="4.1.1 Core Processes"></a>4.1.1 Core Processes</h2><p><img src="/images/lcs/control-layer.png" alt="background"></p>
+<h1 id="4-3-State-Management"><a href="#4-3-State-Management" class="headerlink" title="4.3 State Management"></a>4.3 State Management</h1><h1 id="4-4-Multi-protocolSupport"><a href="#4-4-Multi-protocolSupport" class="headerlink" title="4.4 Multi-protocolSupport"></a>4.4 Multi-protocolSupport</h1><p><img src="/images/lcs/multi-protocol.png" alt="background"></p>
+<h1 id="4-5-Performance-Optimization"><a href="#4-5-Performance-Optimization" class="headerlink" title="4.5 Performance Optimization"></a>4.5 Performance Optimization</h1><h1 id="4-6-Service-Deployment"><a href="#4-6-Service-Deployment" class="headerlink" title="4.6 Service Deployment"></a>4.6 Service Deployment</h1><p>Chinese version<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/E8rO4uBkFpcLAb_LsBOphw">https://mp.weixin.qq.com/s/E8rO4uBkFpcLAb_LsBOphw</a></p>
 
       
     </div>
