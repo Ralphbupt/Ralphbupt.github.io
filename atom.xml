@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Link&#39;s blog</title>
+  <icon>https://ralphbupt.github.io/icon.png</icon>
+  
+  <link href="https://ralphbupt.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://ralphbupt.github.io/"/>
+  <updated>2024-07-05T15:29:09.572Z</updated>
+  <id>https://ralphbupt.github.io/</id>
+  
+  <author>
+    <name>Link</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>High-Performance Go Service Architecture for Millions of Connections at Baidu</title>
+    <link href="https://ralphbupt.github.io/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/"/>
+    <id>https://ralphbupt.github.io/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/</id>
+    <published>2024-07-04T06:58:46.000Z</published>
+    <updated>2024-07-05T15:29:09.572Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;introductuon&quot;&gt;&lt;a href=&quot;#introductuon&quot; class=&quot;headerlink&quot; title=&quot;introductuon&quot;&gt;&lt;/a&gt;introductuon&lt;/h1&gt;&lt;p&gt;In the mobile internet era,</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>
