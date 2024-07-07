@@ -6,7 +6,7 @@
   <link href="https://ralphbupt.github.io/atom.xml" rel="self"/>
   
   <link href="https://ralphbupt.github.io/"/>
-  <updated>2024-07-05T15:29:09.572Z</updated>
+  <updated>2024-07-07T07:20:27.897Z</updated>
   <id>https://ralphbupt.github.io/</id>
   
   <author>
@@ -17,11 +17,32 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Troubleshooting a UDP Packet Loss Issue on Linux</title>
+    <link href="https://ralphbupt.github.io/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/"/>
+    <id>https://ralphbupt.github.io/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/</id>
+    <published>2024-07-06T19:11:02.000Z</published>
+    <updated>2024-07-07T07:20:27.897Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;introduce&quot;&gt;&lt;a href=&quot;#introduce&quot; class=&quot;headerlink&quot; title=&quot;introduce&quot;&gt;&lt;/a&gt;introduce&lt;/h1&gt;&lt;p&gt;A few years ago, while working on a</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
     <title>High-Performance Go Service Architecture for Millions of Connections at Baidu</title>
     <link href="https://ralphbupt.github.io/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/"/>
     <id>https://ralphbupt.github.io/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/</id>
     <published>2024-07-04T06:58:46.000Z</published>
-    <updated>2024-07-05T15:29:09.572Z</updated>
+    <updated>2024-07-06T19:43:55.298Z</updated>
     
     
       

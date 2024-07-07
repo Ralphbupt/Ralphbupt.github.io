@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"ralphbupt.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="introduceA few years ago, while working on a QUIC-related project, I encountered a very peculiar case of UDP packet loss in a Linux environment. It took me several days to pinpoint the issue, so I’ve">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Troubleshooting a UDP Packet Loss Issue on Linux">
+<meta property="og:url" content="https://ralphbupt.github.io/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/index.html">
+<meta property="og:site_name" content="Link&#39;s blog">
+<meta property="og:description" content="introduceA few years ago, while working on a QUIC-related project, I encountered a very peculiar case of UDP packet loss in a Linux environment. It took me several days to pinpoint the issue, so I’ve">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ralphbupt.github.io/images/quic/quic_back.png">
+<meta property="og:image" content="https://ralphbupt.github.io/images/quic/datawaylinux1.png">
+<meta property="article:published_time" content="2024-07-06T19:11:02.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:20:27.897Z">
+<meta property="article:author" content="Link">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ralphbupt.github.io/images/quic/quic_back.png">
+
+
+<link rel="canonical" href="https://ralphbupt.github.io/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://ralphbupt.github.io/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/","path":"2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/","title":"Troubleshooting a UDP Packet Loss Issue on Linux"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Troubleshooting a UDP Packet Loss Issue on Linux | Link's blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Link's blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Link's blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-rss"><a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>RSS</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduce"><span class="nav-number">1.</span> <span class="nav-text">introduce</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#definition-of-terms"><span class="nav-number">2.</span> <span class="nav-text">definition of terms</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#back-ground"><span class="nav-number">3.</span> <span class="nav-text">back ground</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#problem-detect"><span class="nav-number">4.</span> <span class="nav-text">problem detect</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Packet-Loss-Investigation"><span class="nav-number">4.1.</span> <span class="nav-text">Packet Loss Investigation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Detailed-Cause-Identification"><span class="nav-number">4.2.</span> <span class="nav-text">Detailed Cause Identification</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#verification"><span class="nav-number">5.</span> <span class="nav-text">verification</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#references"><span class="nav-number">6.</span> <span class="nav-text">references</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Link</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Ralphbupt" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Ralphbupt" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:pengcheng199@gmail.com" title="E-Mail → mailto:pengcheng199@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://ralphbupt.github.io/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Link">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Link's blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Troubleshooting a UDP Packet Loss Issue on Linux | Link's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Troubleshooting a UDP Packet Loss Issue on Linux
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-07-07 03:11:02 / Modified: 15:20:27" itemprop="dateCreated datePublished" datetime="2024-07-07T03:11:02+08:00">2024-07-07</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/07/07/Troubleshooting-a-UDP-Packet-Loss-Issue-on-Linux/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>1.2k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>4 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="introduce"><a href="#introduce" class="headerlink" title="introduce"></a>introduce</h1><p>A few years ago, while working on a QUIC-related project, I encountered a very peculiar case of UDP packet loss in a Linux environment. It took me several days to pinpoint the issue, so I’ve decided to document and summarize it.</p>
+<h1 id="definition-of-terms"><a href="#definition-of-terms" class="headerlink" title="definition of terms"></a>definition of terms</h1><ul>
+<li><p><strong>QUIC</strong>: A UDP-Based Multiplexed and Secure Transport  <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc9000">A UDP-Based Multiplexed and Secure Transport</a></p>
+</li>
+<li><p><strong>Connection:</strong> A QUIC connection is shared state between a client and a server.</p>
+</li>
+<li><p><strong>Connection ID:</strong>  A connection identifiers of Connection</p>
+</li>
+<li><p><strong>Connection Migration:</strong> The use of a connection ID allows connections to survive changes to endpoint addresses (IP address and port), such as those caused by an endpoint migrating to a new network.</p>
+</li>
+<li><p><strong>QUIC client:</strong>  My QUIC client</p>
+</li>
+<li><p><strong>BGW:</strong> My conpany’s layer 4 gateway， a proxy, transparent to user</p>
+</li>
+<li><p><strong>proxy Server:</strong> a proxy to forward up and down packet </p>
+</li>
+<li><p><strong>QUIC Server:</strong> My Quic Server to handle QUIC connections.</p>
+</li>
+<li><p><strong>quic-go:</strong> A QUIC implementation in pure Go</p>
+</li>
+</ul>
+<h1 id="back-ground"><a href="#back-ground" class="headerlink" title="back ground"></a>back ground</h1><p><img src="/images/quic/quic_back.png" alt="unicast"></p>
+<p>The architecture, as depicted in the diagram, is relatively simple.<br> The issue arises when the number of QUIC connections exceeds a certain limit (typically around 150,000) and persists for some time. This leads to sporadic packet loss, exacerbated by QUIC’s retransmission mechanism, which can escalate into a cascade effect.</p>
+<blockquote>
+<p>During our project, when QUIC was still a draft protocol, we made modifications to it. For instance, due to QUIC’s large handshake packets, our business server had to send certificates during the handshake. We experimented with using the BGW Server to handle the first phase of the handshake and certificate delivery, which led to issues like sequence numbers. However, these details are not pertinent to this article. Looking back, such changes were not ideal for seamless business operations.</p>
+</blockquote>
+<blockquote>
+<p><strong>proxy server</strong> Connection ID facilitates Connection Migration, allowing the same connection to be identified even if the client’s IP and port change. In a typical setup with multiple backend servers, for successful migration, the proxy server ensures that despite changes in client IP and port, packets with the same Connection ID are consistently forwarded to the same target machine. This proxy server, implemented in C++ using epoll and operating as a <big>***single-threaded ***</big> program, employs consistent hashing based on Connection ID to forward UDP packets.</p>
+</blockquote>
+<h1 id="problem-detect"><a href="#problem-detect" class="headerlink" title="problem detect"></a>problem detect</h1><p>When the number of connections is low, the connections remain stable. However, during stress testing with a higher number of connections, they start disconnecting after a while, with the primary reason being timeouts. To pinpoint the cause of these disconnections, I conducted the following investigations.</p>
+<h2 id="Packet-Loss-Investigation"><a href="#Packet-Loss-Investigation" class="headerlink" title="Packet Loss Investigation"></a>Packet Loss Investigation</h2><ol>
+<li><p>Monitoring Key Metrics</p>
+<ul>
+<li>Observed CPU, memory, disk I&#x2F;O, and network I&#x2F;O across all stages.</li>
+<li>None of these metrics hit performance bottlenecks, but network I&#x2F;O spiked when connections began to drop and stabilized when only a few connections remained.</li>
+<li>Preliminary conclusion: possible network packet loss and QUIC retransmissions.</li>
+</ul>
+</li>
+<li><p>Packet Analysis with tcpdump</p>
+<ul>
+<li>Attempted to analyze packet loss and retransmissions.</li>
+<li>Packet capturing is feasible with fewer connections and lower traffic.</li>
+<li>With over 100,000 long connections, capturing and analyzing packets is inefficient due to high data rates. Hence, this approach was temporarily abandoned.</li>
+</ul>
+</li>
+<li><p>Intermediate Step Elimination</p>
+<ul>
+<li>BGW (a core company infrastructure component) was unlikely to be the issue but not ruled out entirely.</li>
+<li>Established two alternate paths:<ul>
+<li>QUIC Client -&gt; QUIC Server</li>
+<li>QUIC Client -&gt; QUIC Proxy -&gt; QUIC Server</li>
+</ul>
+</li>
+<li>The first path showed no issues, while the second path had problems, indicating a potential issue with the QUIC proxy.</li>
+<li>Identified possible scenarios:<ol>
+<li>QUIC client failed to send packets, lost during transmission.</li>
+<li>QUIC client sent packets, but QUIC proxy didn’t receive them.</li>
+<li>QUIC proxy received packets but didn’t forward them.</li>
+<li>QUIC proxy forwarded packets, but QUIC server didn’t receive them.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Log Sampling and Analysis</p>
+<ul>
+<li>To identify the problematic stage, I added logging throughout the entire path.</li>
+<li>Logging for all connections caused disk I&#x2F;O bottlenecks, so I implemented sampling (logging for connections where Connection ID % 10000 &#x3D;&#x3D; 1).</li>
+<li>Debug log analysis revealed that the QUIC client sent packets, but the QUIC proxy didn’t receive them.</li>
+<li>Preliminary conclusion: two potential causes:<ul>
+<li>QUIC client sent packets, but they were lost during transmission.</li>
+<li>Packets were lost during reception by the QUIC proxy (focus area for further investigation).</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>Reviewing Monitoring Details<ul>
+<li>Upon revisiting the monitoring data, I noticed a new detail: the network IN on the QUIC proxy machine was significantly higher than the network OUT.</li>
+<li>This suggests that data packets are reaching the machine where the proxy is located, but the proxy application is not receiving them.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Detailed-Cause-Identification"><a href="#Detailed-Cause-Identification" class="headerlink" title="Detailed Cause Identification"></a>Detailed Cause Identification</h2><p>To further investigate why the QUIC proxy application is not receiving the packets, I conducted the following steps:<br><img src="/images/quic/datawaylinux1.png" alt="dataway"></p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> +----------------+       +----------------+</span><br><span class="line">| Network Adapter|       |   Ring Buffer  |</span><br><span class="line">+----------------+       +----------------+</span><br><span class="line">        |                          |</span><br><span class="line">        v                          v</span><br><span class="line">+----------------+       +----------------+</span><br><span class="line">|     Kernel     |       | System Buffer  |</span><br><span class="line">+----------------+       +----------------+</span><br><span class="line">        |                          |</span><br><span class="line">        v                          v</span><br><span class="line">+----------------+       +----------------+</span><br><span class="line">|  User Program  |       | Socket Buffer  |</span><br><span class="line">+----------------+       +----------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>The sending process wasn’t analyzed because it’s similar to receiving but in reverse, and packet loss is less likely, occurring only when the application’s send rate exceeds the kernel and network card’s processing rate.</p>
+<ol>
+<li><p>Check for Packet Loss at the NIC Level</p>
+<ul>
+<li>Result: No packet loss detected.</li>
+<li>Command Used: ethtool -S &#x2F; ifconfig</li>
+</ul>
+</li>
+<li><p>Check for UDP Protocol Packet Loss</p>
+<ul>
+<li>Result: Packet receive errors are rapidly increasing at a rate of 10k per second, and RcvbufErrors are also increasing. The rate of increase for packet receive errors is much higher than for RcvbufErrors.</li>
+</ul>
+</li>
+<li><p>Check UDP Buffer Size</p>
+<ul>
+<li>Current Sizes: System UDP buffer size is 256k, application UDP buffer size is 2M.</li>
+<li>Adjustment: Even after increasing the system UDP buffer size to 25M, RcvbufErrors continue to grow.</li>
+<li>Conclusion: The main cause of packet loss appears to be packet receive errors.</li>
+</ul>
+</li>
+<li><p>Check Firewall Status</p>
+<ul>
+<li>Result: Firewall is disabled.</li>
+</ul>
+</li>
+<li><p>Check Application Load</p>
+<ul>
+<li>Result: CPU, memory, and disk I&#x2F;O loads are all low.</li>
+</ul>
+</li>
+<li><p>Check Application Processing Logic</p>
+<ul>
+<li>Result: The application uses single-threaded synchronous processing with simple logic to forward packets.</li>
+<li>Potential Issue: The simplicity and single-threaded nature of the processing logic might be the source of the problem.</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>At this point, it can be preliminarily determined that the proxy’s processing capability is insufficient. After carefully reviewing the proxy’s code, it was found that the proxy uses a single-threaded epoll event loop to receive and synchronously forward packets.<br>With additional logging and statistics, it was observed that the processing time for each packet is approximately 20-50 microseconds. Therefore, the single-threaded synchronous processing can handle 20,000 to 50,000 packets per second. If the number of packets exceeds this processing capacity, packets are likely to be dropped.</p>
+</blockquote>
+<h1 id="verification"><a href="#verification" class="headerlink" title="verification"></a>verification</h1><p>The optimal solution would be to refactor the proxy logic to use multi-threading and asynchronous processing. This can significantly increase the proxy’s throughput, but it requires substantial changes to the code logic. Therefore, I initially started multiple processes simply to quickly validate by listening on multiple ports, and found that the QUIC server can reliably maintain hundreds of thousands of connections.</p>
+<h1 id="references"><a href="#references" class="headerlink" title="references"></a>references</h1><p><a target="_blank" rel="noopener" href="https://ref.onixs.biz/lost-multicast-packets-troubleshooting.html">lost-multicast-packets-troubleshooting</a></p>
+<p><a target="_blank" rel="noopener" href="https://cizixs.com/2018/01/13/linux-udp-packet-drop-debug/">linux-udp-packet-drop-debug</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/07/04/High-Performance-Go-Service-Architecture-for-Millions-of-Connections-at-Baidu/" rel="prev" title="High-Performance Go Service Architecture for Millions of Connections at Baidu">
+                  <i class="fa fa-angle-left"></i> High-Performance Go Service Architecture for Millions of Connections at Baidu
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Link</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">3k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">10 mins.</span>
+  </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":["pengcheng199"],"count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>
