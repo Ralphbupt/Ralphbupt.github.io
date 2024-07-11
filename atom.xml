@@ -6,7 +6,7 @@
   <link href="https://ralphbupt.github.io/atom.xml" rel="self"/>
   
   <link href="https://ralphbupt.github.io/"/>
-  <updated>2024-07-07T07:20:27.897Z</updated>
+  <updated>2024-07-11T20:22:52.044Z</updated>
   <id>https://ralphbupt.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Group Chat vs. Live Stream Messaging: A Comparison</title>
+    <link href="https://ralphbupt.github.io/2024/07/11/Group-Chat-vs-Live-Stream-Messaging-A-Comparison/"/>
+    <id>https://ralphbupt.github.io/2024/07/11/Group-Chat-vs-Live-Stream-Messaging-A-Comparison/</id>
+    <published>2024-07-11T15:31:11.000Z</published>
+    <updated>2024-07-11T20:22:52.044Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Introduction&quot;&gt;&lt;a href=&quot;#Introduction&quot; class=&quot;headerlink&quot; title=&quot;Introduction&quot;&gt;&lt;/a&gt;Introduction&lt;/h1&gt;&lt;p&gt;In today’s digital world,</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Troubleshooting a UDP Packet Loss Issue on Linux</title>
