@@ -1,7 +1,7 @@
 ---
 title: "Incremental State Sync: How Clients Catch Up Without Re-Downloading the World"
-date: 2026-06-18T10:00:00+08:00
-permalink: "2026/06/18/Incremental-State-Synchronization"
+date: 2026-06-14T10:00:00+08:00
+permalink: "2026/06/14/Incremental-State-Synchronization"
 description: "How real-time apps let a client catch up on state — conversations, group members, missed messages — after going offline, without re-downloading everything. A tour from replication logs and IMAP to Telegram, Discord, Matrix, and WeChat, and the distributed-systems theory underneath."
 tags:
   - Distributed Systems
