@@ -1,0 +1,86 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  prev?: CollectionEntry<'posts'> | null;
+  next?: CollectionEntry<'posts'> | null;
+}
+
+const { post, prev, next } = Astro.props;
+const { title, date, updated, tags, description } = post.data;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+---
+
+<BaseLayout title={title} description={description} ogType="article">
+  <article>
+    <header class="post-header">
+      <p class="post-header__meta">
+        <time datetime={date.toISOString()}>{fmt(date)}</time>
+        {updated && <span>· updated {fmt(updated)}</span>}
+        {tags.length > 0 && <span>· {tags.length} tags</span>}
+      </p>
+      <h1>{title}</h1>
+      {
+        tags.length > 0 && (
+          <div class="tag-row">
+            {tags.map((t) => (
+              <span class="tag">{t}</span>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <nav class="post-nav" aria-label="Adjacent posts">
+      {
+        prev ? (
+          <a class="post-nav__link post-nav__prev" href={`/${prev.data.permalink}/`} rel="prev">
+            <span class="post-nav__dir">&larr; Previous</span>
+            <span class="post-nav__title">{prev.data.title}</span>
+          </a>
+        ) : (
+          <span class="post-nav__placeholder" aria-hidden="true" />
+        )
+      }
+      {
+        next ? (
+          <a class="post-nav__link post-nav__next" href={`/${next.data.permalink}/`} rel="next">
+            <span class="post-nav__dir">Next &rarr;</span>
+            <span class="post-nav__title">{next.data.title}</span>
+          </a>
+        ) : (
+          <span class="post-nav__placeholder" aria-hidden="true" />
+        )
+      }
+    </nav>
+
+    <footer class="post-footer">
+      <a href="/">&larr; All posts</a>
+      <a href="#top">Top &uarr;</a>
+    </footer>
+  </article>
+
+  <script is:inline>
+    // Make wide tables scroll horizontally on small screens.
+    for (const table of document.querySelectorAll('.prose table')) {
+      if (table.parentElement?.classList.contains('table-scroll')) continue;
+      const wrap = document.createElement('div');
+      wrap.className = 'table-scroll';
+      table.replaceWith(wrap);
+      wrap.appendChild(table);
+    }
+  </script>
+</BaseLayout>

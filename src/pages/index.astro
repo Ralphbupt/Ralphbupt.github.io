@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+---
+
+<BaseLayout
+  title="Link's Blog"
+  description="Notes on real-time messaging systems, networking, Go, and high-performance backend architecture."
+>
+  <section class="intro">
+    <h1>Link&rsquo;s Blog</h1>
+    <p>Real-time messaging systems, networking internals, Go, and high-performance backends.</p>
+  </section>
+
+  <ul class="post-list">
+    {
+      posts.map((post) => (
+        <li class="post-item">
+          <span class="post-item__date">{fmt(post.data.date)}</span>
+          <h2 class="post-item__title">
+            <a href={`/${post.data.permalink}/`}>{post.data.title}</a>
+          </h2>
+          <p class="post-item__desc">{post.data.description}</p>
+          {post.data.tags.length > 0 && (
+            <div class="tag-row">
+              {post.data.tags.map((t) => (
+                <span class="tag">{t}</span>
+              ))}
+            </div>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

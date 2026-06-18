@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  // Oldest first, so index-1 is the older ("previous") post and index+1 the
+  // newer ("next") one.
+  const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.date.valueOf() - b.data.date.valueOf()
+  );
+  return posts.map((post, i) => ({
+    // `permalink` is the full date-based path, reproducing the original Hexo URLs.
+    params: { slug: post.data.permalink },
+    props: {
+      post,
+      prev: i > 0 ? posts[i - 1] : null, // older
+      next: i < posts.length - 1 ? posts[i + 1] : null, // newer
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostLayout post={post} prev={prev} next={next}>
+  <Content />
+</PostLayout>
