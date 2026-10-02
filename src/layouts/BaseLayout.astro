@@ -24,10 +24,10 @@ const imageUrl = new URL(image, Astro.site).href;
 const author = {
   '@type': 'Person',
   '@id': 'https://liko.page/#person',
-  name: 'Pengcheng Wang',
-  alternateName: ['Link', 'liko'],
+  name: 'Link',
+  alternateName: 'liko',
   url: 'https://liko.page/',
-  sameAs: ['https://github.com/ralphbupt', 'https://www.linkedin.com/in/pengcheng-wang'],
+  sameAs: ['https://github.com/ralphbupt'],
 };
 const website = {
   '@type': 'WebSite',
@@ -61,7 +61,7 @@ const ld = { '@context': 'https://schema.org', '@graph': [website, author, ...js
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={imageUrl} />
-    <meta name="author" content="Pengcheng Wang" />
+    <meta name="author" content="Link" />
     <script type="application/ld+json" set:html={JSON.stringify(ld)} />
 
     <link rel="icon" type="image/png" href="/images/favicon-32x32-next.png" sizes="32x32" />

@@ -9,7 +9,7 @@ export async function GET(context) {
   const lines = [
     "# Link's Blog",
     '',
-    '> Technical writing by Pengcheng Wang (Link / liko), a backend engineer: real-time messaging systems, networking internals, Go, and high-performance backends.',
+    '> Technical writing by Link (liko), a backend engineer: real-time messaging systems, networking internals, Go, and high-performance backends.',
     '',
     '## Posts',
     '',
