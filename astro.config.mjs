@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build
 export default defineConfig({
-  site: 'https://ralphbupt.github.io',
+  site: 'https://blog.liko.page',
   trailingSlash: 'always',
   integrations: [sitemap()],
   markdown: {
