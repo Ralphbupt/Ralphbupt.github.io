@@ -8,12 +8,36 @@ interface Props {
   description: string;
   /** Absolute or root-relative canonical path, optional. */
   ogType?: string;
+  /** Share image, root-relative (default: the site-wide card). */
+  image?: string;
+  /** Extra JSON-LD objects for this page (e.g. a BlogPosting). */
+  jsonLd?: object[];
 }
 
-const { title, description, ogType = 'website' } = Astro.props;
+const { title, description, ogType = 'website', image = '/og.png', jsonLd = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const siteName = "Link's Blog";
 const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
+const imageUrl = new URL(image, Astro.site).href;
+
+// The author is the same person as on liko.page; sharing the @id links the two sites.
+const author = {
+  '@type': 'Person',
+  '@id': 'https://liko.page/#person',
+  name: 'Pengcheng Wang',
+  alternateName: ['Link', 'liko'],
+  url: 'https://liko.page/',
+  sameAs: ['https://github.com/ralphbupt', 'https://www.linkedin.com/in/pengcheng-wang'],
+};
+const website = {
+  '@type': 'WebSite',
+  '@id': new URL('/#website', Astro.site).href,
+  url: new URL('/', Astro.site).href,
+  name: siteName,
+  inLanguage: 'en',
+  author: { '@id': author['@id'] },
+};
+const ld = { '@context': 'https://schema.org', '@graph': [website, author, ...jsonLd] };
 ---
 
 <!doctype html>
@@ -31,7 +55,14 @@ const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={siteName} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="author" content="Pengcheng Wang" />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
 
     <link rel="icon" type="image/png" href="/images/favicon-32x32-next.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="/images/favicon-16x16-next.png" sizes="16x16" />
