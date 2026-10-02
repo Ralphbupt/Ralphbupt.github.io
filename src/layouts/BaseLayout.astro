@@ -50,6 +50,15 @@ const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
         } catch (e) {}
       })();
     </script>
+
+    <!-- Google Analytics (GA4), property "Blog" -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-B2EVXBY4Z5"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-B2EVXBY4Z5');
+    </script>
   </head>
   <body>
     <Header />
